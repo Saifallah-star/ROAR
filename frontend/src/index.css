@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base resets ─────────────────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    @apply bg-roar-dark text-roar-text;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  input, button { outline: none; }
+  input:focus-visible { outline: none; }
+}
+
+/* ── Component helpers ───────────────────────────────────────────────────── */
+@layer components {
+  /* Inputs */
+  .roar-input {
+    @apply w-full px-4 py-3 rounded-lg
+           bg-roar-surface border border-roar-border
+           text-roar-text placeholder-roar-muted
+           font-body text-sm
+           transition-all duration-200
+           focus:border-roar-crimson focus:ring-2 focus:ring-roar-crimson/20;
+  }
+
+  /* Primary CTA */
+  .roar-btn-primary {
+    @apply relative flex items-center justify-center gap-2
+           px-6 py-3 rounded-lg font-semibold text-sm
+           bg-roar-crimson text-white
+           border border-roar-crimson
+           transition-all duration-200 cursor-pointer
+           hover:bg-roar-crimson-dark hover:shadow-glow-crimson
+           active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  /* Secondary / ghost */
+  .roar-btn-ghost {
+    @apply flex items-center justify-center gap-2
+           px-6 py-3 rounded-lg font-semibold text-sm
+           bg-transparent text-roar-gold
+           border border-roar-gold/40
+           transition-all duration-200 cursor-pointer
+           hover:border-roar-gold hover:bg-roar-gold/10 hover:shadow-glow-gold
+           active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  /* Card surface */
+  .roar-card {
+    @apply bg-roar-card border border-roar-border rounded-xl shadow-card;
+  }
+}
+
+/* ── Utility extras ──────────────────────────────────────────────────────── */
+@layer utilities {
+  .text-glow-crimson {
+    text-shadow: 0 0 24px rgba(196,30,58,0.7), 0 0 80px rgba(196,30,58,0.3);
+  }
+  .text-glow-gold {
+    text-shadow: 0 0 24px rgba(212,160,23,0.7), 0 0 80px rgba(212,160,23,0.3);
+  }
+  .bg-mesh {
+    background-image:
+      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(196,30,58,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 80%, rgba(212,160,23,0.08) 0%, transparent 60%);
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(196,30,58,0.4) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(196,30,58,0.4); border-radius: 4px; }
+}
