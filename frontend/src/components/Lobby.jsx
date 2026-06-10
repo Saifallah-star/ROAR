@@ -76,11 +76,11 @@ function ErrorBanner({ message, onDismiss }) {
 /*  LANDING VIEW                                                              */
 /* ══════════════════════════════════════════════════════════════════════════ */
 function LandingView({ onCreateRoom, onJoinRoom, error, isLoading, clearError }) {
-  const [name,       setName]       = useState('');
-  const [roomCode,   setRoomCode]   = useState('');
-  const [joinMode,   setJoinMode]   = useState(false);
-  const [nameErr,    setNameErr]    = useState('');
-  const [codeErr,    setCodeErr]    = useState('');
+  const [name, setName] = useState('');
+  const [roomCode, setRoomCode] = useState('');
+  const [joinMode, setJoinMode] = useState(false);
+  const [nameErr, setNameErr] = useState('');
+  const [codeErr, setCodeErr] = useState('');
   const nameRef = useRef(null);
   const codeRef = useRef(null);
 
@@ -89,7 +89,7 @@ function LandingView({ onCreateRoom, onJoinRoom, error, isLoading, clearError })
 
   const validateName = (v) => {
     if (v.trim().length < 2) { setNameErr('Name needs at least 2 characters.'); return false; }
-    if (v.trim().length > 20) { setNameErr('Name cannot exceed 20 characters.');  return false; }
+    if (v.trim().length > 20) { setNameErr('Name cannot exceed 20 characters.'); return false; }
     setNameErr(''); return true;
   };
   const validateCode = (v) => {
@@ -117,7 +117,7 @@ function LandingView({ onCreateRoom, onJoinRoom, error, isLoading, clearError })
       <div className="text-center mb-10 animate-slide-up">
         <div className="inline-block mb-4">
           <img src="/LOGO.png" alt="ROAR" className="h-20 w-auto mx-auto drop-shadow-[0_0_30px_rgba(196,30,58,0.5)]"
-               onError={(e) => { e.target.style.display = 'none'; }} />
+            onError={(e) => { e.target.style.display = 'none'; }} />
         </div>
         <h1 className="font-display font-black text-7xl md:text-8xl tracking-widest
                        text-transparent bg-clip-text
@@ -146,7 +146,7 @@ function LandingView({ onCreateRoom, onJoinRoom, error, isLoading, clearError })
               id="player-name-input"
               type="text"
               maxLength={20}
-              placeholder="Enter your warrior name…"
+              placeholder="Enter your name…"
               value={name}
               onChange={(e) => { setName(e.target.value); if (nameErr) setNameErr(''); if (error) clearError(); }}
               onKeyDown={(e) => handleKeyDown(e, joinMode ? handleJoin : handleCreate)}
@@ -243,13 +243,13 @@ function LandingView({ onCreateRoom, onJoinRoom, error, isLoading, clearError })
 /* ══════════════════════════════════════════════════════════════════════════ */
 function WaitingLobbyView({ player, room, onStartGame, onLeaveRoom, error, clearError }) {
   const [copied, setCopied] = useState(false);
-  const players   = room?.players ?? [];
-  const isHost    = player?.isHost;
-  const canStart  = isHost && players.length >= 3;
-  const needMore  = 3 - players.length;
+  const players = room?.players ?? [];
+  const isHost = player?.isHost;
+  const canStart = isHost && players.length >= 3;
+  const needMore = 3 - players.length;
 
   const copyCode = () => {
-    navigator.clipboard.writeText(room?.code ?? '').catch(() => {});
+    navigator.clipboard.writeText(room?.code ?? '').catch(() => { });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -330,9 +330,9 @@ function WaitingLobbyView({ player, room, onStartGame, onLeaveRoom, error, clear
                   className={`flex items-center gap-3 p-3 rounded-lg
                               border transition-all duration-300
                               ${isSelf
-                                ? 'border-roar-crimson/40 bg-roar-crimson/5'
-                                : 'border-roar-border bg-roar-surface/50'
-                              }
+                      ? 'border-roar-crimson/40 bg-roar-crimson/5'
+                      : 'border-roar-border bg-roar-surface/50'
+                    }
                               animate-scale-in`}
                   style={{ animationDelay: `${idx * 0.05}s` }}
                 >
@@ -375,7 +375,7 @@ function WaitingLobbyView({ player, room, onStartGame, onLeaveRoom, error, clear
             {/* Empty slots */}
             {players.length < 6 && Array.from({ length: Math.min(6 - players.length, 3) }).map((_, i) => (
               <div key={`empty-${i}`}
-                   className="flex items-center gap-3 p-3 rounded-lg
+                className="flex items-center gap-3 p-3 rounded-lg
                               border border-dashed border-roar-border/40 opacity-30">
                 <div className="w-9 h-9 rounded-lg bg-roar-surface/50 flex-shrink-0" />
                 <span className="text-roar-muted text-sm">Waiting for player…</span>

@@ -25,10 +25,10 @@ function emitWhenConnected(socket, event, payload) {
 }
 
 export default function App() {
-  const [view,      setView]      = useState('landing'); // 'landing' | 'lobby' | 'game'
-  const [player,    setPlayer]    = useState(null);
-  const [room,      setRoom]      = useState(null);
-  const [error,     setError]     = useState('');
+  const [view, setView] = useState('landing'); // 'landing' | 'lobby' | 'game'
+  const [player, setPlayer] = useState(null);
+  const [room, setRoom] = useState(null);
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   // ── Socket bootstrap ──────────────────────────────────────────────────────
@@ -36,13 +36,13 @@ export default function App() {
     const socket = getSocket();
 
     const handlers = {
-      connect:       ()            => console.log('[ROAR UI] Connected'),
-      disconnect:    ()            => { setView('landing'); setPlayer(null); setRoom(null); },
+      connect: () => console.log('[ROAR UI] Connected'),
+      disconnect: () => { setView('landing'); setPlayer(null); setRoom(null); },
       'room-created': ({ player: p, room: r }) => { clearLoadingTimer(); setPlayer(p); setRoom(r); setView('lobby'); setIsLoading(false); },
-      'room-joined':  ({ player: p, room: r }) => { clearLoadingTimer(); setPlayer(p); setRoom(r); setView('lobby'); setIsLoading(false); },
-      'room-updated': ({ room: r })             => setRoom(r),
-      'game-started': ({ room: r })             => { setRoom(r); setView('game'); },
-      'roar-error':   ({ message })             => { clearLoadingTimer(); setError(message); setIsLoading(false); },
+      'room-joined': ({ player: p, room: r }) => { clearLoadingTimer(); setPlayer(p); setRoom(r); setView('lobby'); setIsLoading(false); },
+      'room-updated': ({ room: r }) => setRoom(r),
+      'game-started': ({ room: r }) => { setRoom(r); setView('game'); },
+      'roar-error': ({ message }) => { clearLoadingTimer(); setError(message); setIsLoading(false); },
     };
 
     Object.entries(handlers).forEach(([ev, fn]) => socket.on(ev, fn));
@@ -65,7 +65,7 @@ export default function App() {
     clearLoadingTimer();
     loadingTimer.current = setTimeout(() => {
       setIsLoading(false);
-      setError('Could not reach the server. Is the backend running on port 3001?');
+      setError('Could not reach the server.');
     }, 5000);
   }, [clearLoadingTimer]);
 
