@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { io } from 'socket.io-client';
 import Lobby from './components/Lobby';
+import GameBoard from './components/GameBoard';
 
 const SOCKET_URL = import.meta.env.VITE_WS_URL || (import.meta.env.DEV ? 'http://localhost:3001' : window.location.origin);
 
@@ -99,7 +100,14 @@ export default function App() {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-roar-dark bg-mesh font-body text-roar-text">
-      {view === 'landing' && (
+      {room?.status === 'PLAYING' ? (
+        <GameBoard
+          room={room}
+          player={player}
+          socket={getSocket()}
+          onLeave={leaveRoom}
+        />
+      ) : view === 'landing' ? (
         <Lobby
           mode="landing"
           onCreateRoom={createRoom}
@@ -108,9 +116,7 @@ export default function App() {
           isLoading={isLoading}
           clearError={clearError}
         />
-      )}
-
-      {view === 'lobby' && (
+      ) : view === 'lobby' ? (
         <Lobby
           mode="waiting"
           player={player}
@@ -120,16 +126,12 @@ export default function App() {
           error={error}
           clearError={clearError}
         />
-      )}
-
-      {view === 'game' && (
-        <div className="flex items-center justify-center min-h-screen animate-fade-in">
+      ) : (
+        <div className="flex items-center justify-center min-h-screen">
           <div className="text-center roar-card p-12">
             <h1 className="font-display text-5xl font-black text-roar-gold text-glow-gold mb-3">
-              Match Started!
+              Loading Match...
             </h1>
-            <p className="text-roar-muted text-lg">Stage 2 — GameBoard incoming…</p>
-            <p className="mt-2 text-roar-text/60 text-sm">{room?.players?.length} players in arena</p>
           </div>
         </div>
       )}

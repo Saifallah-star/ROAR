@@ -1,0 +1,776 @@
+import { useState, useEffect } from 'react';
+
+// Ornate card border decoration
+const Decors = {
+  CardBorder: () => (
+    <rect x="2" y="2" width="20" height="32" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
+  )
+};
+
+// ─── HIGH-QUALITY CUSTOM ILLUSTRATIVE AVATARS (SVGs) ───
+const Avatars = {
+  Explorer: ({ className = "w-16 h-16" }) => (
+    <svg viewBox="0 0 100 100" className={className}>
+      <circle cx="50" cy="50" r="48" fill="#1b2e25" stroke="#3d6b52" strokeWidth="3" />
+      <path d="M15 45 C15 25, 85 25, 85 45 Z" fill="#bfa17a" />
+      <rect x="10" y="43" width="80" height="6" rx="3" fill="#a3845b" />
+      <rect x="25" y="38" width="50" height="5" fill="#5c3f2b" />
+      <circle cx="50" cy="58" r="18" fill="#ffdbac" />
+      <rect x="34" y="52" width="14" height="10" rx="3" fill="#3a3a3a" stroke="#fff" strokeWidth="1.5" />
+      <rect x="52" y="52" width="14" height="10" rx="3" fill="#3a3a3a" stroke="#fff" strokeWidth="1.5" />
+      <line x1="48" y1="57" x2="52" y2="57" stroke="#fff" strokeWidth="2" />
+      <path d="M42 66 Q50 72 58 66" stroke="#4a3b32" strokeWidth="3" fill="none" />
+      <path d="M36 62 Q50 68 64 62" fill="#5c4a3f" />
+      <path d="M35 76 L65 76 L60 95 L40 95 Z" fill="#4a5d4e" />
+    </svg>
+  ),
+  Warrior: ({ className = "w-16 h-16" }) => (
+    <svg viewBox="0 0 100 100" className={className}>
+      <circle cx="50" cy="50" r="48" fill="#2d1c1c" stroke="#6b3d3d" strokeWidth="3" />
+      <path d="M38 70 L62 70 L60 90 L40 90 Z" fill="#ffcd94" />
+      <path d="M32 60 C32 80, 68 80, 68 60 Z" fill="#1a110f" />
+      <circle cx="50" cy="50" r="18" fill="#ffcd94" />
+      <path d="M40 45 L43 55 L40 58" stroke="#c41e3a" strokeWidth="2.5" fill="none" />
+      <path d="M60 45 L57 55 L60 58" stroke="#c41e3a" strokeWidth="2.5" fill="none" />
+      <path d="M30 40 C30 15, 70 15, 70 40 L68 45 L32 45 Z" fill="#5a5d64" />
+      <path d="M52 15 L52 25 M44 20 L60 20" stroke="#d4a017" strokeWidth="2" />
+      <path d="M32 30 Q20 20 18 35 Q26 36 32 32" fill="#f5f5f5" stroke="#222" strokeWidth="1" />
+      <path d="M68 30 Q80 20 82 35 Q74 36 68 32" fill="#f5f5f5" stroke="#222" strokeWidth="1" />
+      <circle cx="44" cy="48" r="2.5" fill="#fff" />
+      <circle cx="44" cy="48" r="1.2" fill="#000" />
+      <circle cx="56" cy="48" r="2.5" fill="#fff" />
+      <circle cx="56" cy="48" r="1.2" fill="#000" />
+    </svg>
+  ),
+  Shaman: ({ className = "w-16 h-16" }) => (
+    <svg viewBox="0 0 100 100" className={className}>
+      <circle cx="50" cy="50" r="48" fill="#2d1c3a" stroke="#60358a" strokeWidth="3" />
+      <path d="M35 30 L42 10 L48 30 Z" fill="#c41e3a" />
+      <path d="M50 28 L50 5 L56 28 Z" fill="#d4a017" />
+      <path d="M65 30 L58 10 L52 30 Z" fill="#2563eb" />
+      <rect x="32" y="32" width="36" height="42" rx="8" fill="#8b5a2b" stroke="#5c3a1a" strokeWidth="2" />
+      <ellipse cx="44" cy="48" rx="6" ry="3" fill="#a7f3d0" />
+      <circle cx="44" cy="48" r="1.5" fill="#047857" />
+      <ellipse cx="56" cy="48" rx="6" ry="3" fill="#a7f3d0" />
+      <circle cx="56" cy="48" r="1.5" fill="#047857" />
+      <path d="M38 60 L46 64 L38 68" stroke="#10b981" strokeWidth="2.5" fill="none" />
+      <path d="M62 60 L54 64 L62 68" stroke="#10b981" strokeWidth="2.5" fill="none" />
+      <rect x="44" y="62" width="12" height="4" rx="2" fill="#222" />
+    </svg>
+  ),
+  Sorcerer: ({ className = "w-16 h-16" }) => (
+    <svg viewBox="0 0 100 100" className={className}>
+      <circle cx="50" cy="50" r="48" fill="#13132b" stroke="#313175" strokeWidth="3" />
+      <path d="M22 80 C22 30, 78 30, 78 80 Z" fill="#2e1f5c" />
+      <path d="M28 80 C28 40, 72 40, 72 80 Z" fill="#1b1238" />
+      <circle cx="50" cy="56" r="15" fill="#ffdbac" />
+      <path d="M38 62 C38 85, 62 85, 62 62 Z" fill="#f3f4f6" />
+      <circle cx="50" cy="48" r="3.5" fill="#fcd34d" className="animate-pulse" />
+      <circle cx="50" cy="48" r="1" fill="#fff" />
+      <path d="M42 54 L46 54 M54 54 L58 54" stroke="#fff" strokeWidth="1.5" />
+    </svg>
+  ),
+  Bandit: ({ className = "w-16 h-16" }) => (
+    <svg viewBox="0 0 100 100" className={className}>
+      <circle cx="50" cy="50" r="48" fill="#2a221a" stroke="#5c4a37" strokeWidth="3" />
+      <path d="M24 38 Q50 24 76 38 Z" fill="#b91c1c" />
+      <circle cx="50" cy="56" r="18" fill="#e0a96d" />
+      <path d="M32 50 L56 42" stroke="#111" strokeWidth="3.5" />
+      <polygon points="38,44 48,42 46,52 38,50" fill="#111" />
+      <circle cx="58" cy="50" r="2.5" fill="#fff" />
+      <circle cx="58" cy="50" r="1" fill="#000" />
+      <path d="M44 65 Q54 67 58 62" stroke="#222" strokeWidth="2" fill="none" />
+      <circle cx="50" cy="62" r="12" fill="none" stroke="#333" strokeWidth="3" strokeDasharray="1 3" />
+    </svg>
+  )
+};
+
+const AVATAR_LIST = [Avatars.Explorer, Avatars.Warrior, Avatars.Shaman, Avatars.Sorcerer, Avatars.Bandit];
+
+// ─── HIGH-QUALITY CUSTOM ANIMAL CARD ILLUSTRATION COMPONENT ───
+const AnimalIllustrations = {
+  Falcon: () => (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      <defs>
+        <linearGradient id="grad-falcon-sky" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#1e3a8a" />
+          <stop offset="40%" stopColor="#3b82f6" />
+          <stop offset="100%" stopColor="#020617" />
+        </linearGradient>
+        <radialGradient id="grad-falcon-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fef08a" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#fef08a" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="100" height="100" fill="url(#grad-falcon-sky)" />
+      <circle cx="50" cy="45" r="30" fill="url(#grad-falcon-glow)" />
+      <polygon points="-10,100 30,60 70,100" fill="#0f172a" opacity="0.8" />
+      <polygon points="30,100 70,50 110,100" fill="#020617" />
+      <line x1="50" y1="45" x2="20" y2="20" stroke="#fef08a" strokeWidth="0.5" opacity="0.3" />
+      <line x1="50" y1="45" x2="80" y2="20" stroke="#fef08a" strokeWidth="0.5" opacity="0.3" />
+      <line x1="50" y1="45" x2="50" y2="10" stroke="#fef08a" strokeWidth="0.5" opacity="0.3" />
+
+      {/* Wings spreading */}
+      <path d="M10 50 C22 20, 42 35, 50 48 C58 35, 78 20, 90 50 C78 68, 62 55, 50 62 C38 55, 22 68, 10 50 Z" fill="#e2e8f0" stroke="#475569" strokeWidth="1" />
+      <path d="M20 48 C30 32, 44 42, 50 50 C56 42, 70 32, 80 48 C70 60, 50 56, 50 56 Z" fill="#cbd5e1" />
+
+      {/* Falcon Head */}
+      <path d="M42 42 C42 32, 58 32, 58 42 L56 50 L44 50 Z" fill="#ffffff" stroke="#334155" strokeWidth="1" />
+      <path d="M47 48 L53 48 L50 60 Z" fill="#fbbf24" stroke="#ca8a04" strokeWidth="1" />
+      <polygon points="43,40 48,42 46,38" fill="#0f172a" />
+      <polygon points="57,40 52,42 54,38" fill="#0f172a" />
+      <circle cx="45" cy="41" r="1" fill="#f59e0b" />
+      <circle cx="55" cy="41" r="1" fill="#f59e0b" />
+    </svg>
+  ),
+  Lion: () => (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      <defs>
+        <radialGradient id="grad-lion" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fef08a" />
+          <stop offset="70%" stopColor="#eab308" />
+          <stop offset="100%" stopColor="#713f12" />
+        </radialGradient>
+      </defs>
+      <rect width="100" height="100" fill="url(#grad-lion)" />
+      <circle cx="50" cy="50" r="36" fill="#451a03" />
+      <path d="M50 20 L58 32 L70 28 L66 40 L78 45 L68 52 L72 65 L58 60 L50 72 L42 60 L32 65 L36 52 L26 45 L38 40 L34 28 L46 32 Z" fill="#451a03" />
+      <circle cx="50" cy="48" r="18" fill="#ca8a04" />
+      <polygon points="50,56 46,50 54,50" fill="#451a03" />
+      <path d="M42 45 Q50 38 58 45" stroke="#451a03" strokeWidth="2" fill="none" />
+      <circle cx="45" cy="46" r="2" fill="#451a03" />
+      <circle cx="55" cy="46" r="2" fill="#451a03" />
+      <polygon points="40,24 50,15 60,24 54,28 46,28" fill="#fef08a" stroke="#ca8a04" strokeWidth="1" />
+    </svg>
+  ),
+  Tiger: () => (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      <defs>
+        <radialGradient id="grad-tiger" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ffedd5" />
+          <stop offset="75%" stopColor="#f97316" />
+          <stop offset="100%" stopColor="#7c2d12" />
+        </radialGradient>
+      </defs>
+      <rect width="100" height="100" fill="url(#grad-tiger)" />
+      <path d="M15 15 L35 30 L15 40 M85 15 L65 30 L85 40 M10 60 L30 65 L10 70 M90 60 L70 65 L90 70" stroke="#1c0702" strokeWidth="5" strokeLinecap="round" fill="none" />
+      <circle cx="50" cy="50" r="25" fill="#ea580c" stroke="#1c0702" strokeWidth="2.5" />
+      <path d="M36 36 L28 26 L40 32 Z M64 36 L72 26 L60 32 Z" fill="#1c0702" />
+      <polygon points="46,45 42,42 50,42" fill="#facc15" />
+      <polygon points="54,45 58,42 50,42" fill="#facc15" />
+      <polygon points="50,58 45,52 55,52" fill="#1c0702" />
+    </svg>
+  ),
+  Jaguar: () => (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      <defs>
+        <radialGradient id="grad-jaguar" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fef9c3" />
+          <stop offset="70%" stopColor="#d97706" />
+          <stop offset="100%" stopColor="#1e1b4b" />
+        </radialGradient>
+      </defs>
+      <rect width="100" height="100" fill="url(#grad-jaguar)" />
+      <circle cx="25" cy="20" r="4" fill="#1e1b4b" stroke="#78350f" strokeWidth="2" />
+      <circle cx="75" cy="20" r="4" fill="#1e1b4b" stroke="#78350f" strokeWidth="2" />
+      <circle cx="50" cy="48" r="22" fill="#b45309" stroke="#1e1b4b" strokeWidth="2" />
+      <ellipse cx="43" cy="44" rx="4" ry="2.5" fill="#facc15" />
+      <polygon points="50,54 46,49 54,49" fill="#1e1b4b" />
+    </svg>
+  ),
+  Gorilla: () => (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      <defs>
+        <radialGradient id="grad-gorilla" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#94a3b8" />
+          <stop offset="70%" stopColor="#334155" />
+          <stop offset="100%" stopColor="#0f172a" />
+        </radialGradient>
+      </defs>
+      <rect width="100" height="100" fill="url(#grad-gorilla)" />
+      <path d="M30 60 C30 40, 70 40, 70 60 Z" fill="#1e293b" opacity="0.5" />
+      <circle cx="28" cy="48" r="18" fill="#1e293b" />
+      <circle cx="72" cy="48" r="18" fill="#1e293b" />
+      <rect x="36" y="24" width="28" height="28" rx="10" fill="#0f172a" stroke="#475569" strokeWidth="2.5" />
+      <path d="M43 47 Q50 44 57 47" stroke="#334155" strokeWidth="2" fill="none" />
+    </svg>
+  ),
+  Crocodile: () => (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      <defs>
+        <radialGradient id="grad-croc" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#a7f3d0" />
+          <stop offset="70%" stopColor="#047857" />
+          <stop offset="100%" stopColor="#022c22" />
+        </radialGradient>
+      </defs>
+      <rect width="100" height="100" fill="url(#grad-croc)" />
+      <path d="M25 45 L75 40 L70 50 Z" fill="#065f46" stroke="#022c22" strokeWidth="2" />
+      <polygon points="35,44 38,48 41,44" fill="#fff" />
+      <polygon points="45,43 48,47 51,43" fill="#fff" />
+      <circle cx="32" cy="38" r="3" fill="#fbbf24" />
+    </svg>
+  ),
+  Cobra: () => (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      <defs>
+        <radialGradient id="grad-cobra" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fee2e2" />
+          <stop offset="70%" stopColor="#dc2626" />
+          <stop offset="100%" stopColor="#450a0a" />
+        </radialGradient>
+      </defs>
+      <rect width="100" height="100" fill="url(#grad-cobra)" />
+      <path d="M30 65 Q10 40 35 30 Q50 25 65 30 Q90 40 70 65 Z" fill="#991b1b" stroke="#450a0a" strokeWidth="2.5" />
+      <ellipse cx="50" cy="35" rx="14" ry="10" fill="#7f1d1d" stroke="#450a0a" strokeWidth="2" />
+      <circle cx="45" cy="35" r="2" fill="#facc15" />
+      <circle cx="55" cy="35" r="2" fill="#facc15" />
+    </svg>
+  )
+};
+
+// ─── UNIQUE TACTILE CARD ILLUSTRATIONS FOR DEEDS/MONEY ───
+const MoneyIllustrations = {
+  Wolf: () => (
+    <svg viewBox="0 0 100 100" className="w-full h-full opacity-60">
+      <defs>
+        <radialGradient id="grad-wolf" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#451a03" />
+          <stop offset="100%" stopColor="#1e0c03" />
+        </radialGradient>
+      </defs>
+      <rect width="100" height="100" fill="url(#grad-wolf)" rx="6" />
+      <path d="M50 20 L58 35 L76 30 L66 48 L72 68 L56 62 L50 78 L44 62 L28 68 L34 48 L24 30 L42 35 Z" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="43" cy="42" r="2.5" fill="#ef4444" />
+      <circle cx="57" cy="42" r="2.5" fill="#ef4444" />
+      <path d="M47 52 Q50 48 53 52" stroke="#f59e0b" strokeWidth="1.5" fill="none" />
+      <line x1="50" y1="20" x2="50" y2="35" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="2 2" />
+    </svg>
+  ),
+  Falcon: () => (
+    <svg viewBox="0 0 100 100" className="w-full h-full opacity-60">
+      <defs>
+        <radialGradient id="grad-falcon-mini" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#1e3a8a" />
+          <stop offset="100%" stopColor="#0f172a" />
+        </radialGradient>
+      </defs>
+      <rect width="100" height="100" fill="url(#grad-falcon-mini)" rx="6" />
+      <path d="M20 45 C35 30, 45 40, 50 48 C55 40, 65 30, 80 45 C65 55, 35 55, 20 45 Z" fill="none" stroke="#60a5fa" strokeWidth="2" />
+      <circle cx="50" cy="48" r="8" fill="none" stroke="#60a5fa" strokeWidth="1.5" />
+      <path d="M46 48 L54 48 L50 58 Z" fill="#60a5fa" />
+    </svg>
+  ),
+  Lion: () => (
+    <svg viewBox="0 0 100 100" className="w-full h-full opacity-60">
+      <defs>
+        <radialGradient id="grad-lion-mini" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#78350f" />
+          <stop offset="100%" stopColor="#292524" />
+        </radialGradient>
+      </defs>
+      <rect width="100" height="100" fill="url(#grad-lion-mini)" rx="6" />
+      <circle cx="50" cy="50" r="22" fill="none" stroke="#fbbf24" strokeWidth="2" />
+      <path d="M38 32 Q26 24 34 38" stroke="#fbbf24" strokeWidth="1.5" fill="none" />
+      <path d="M62 32 Q74 24 66 38" stroke="#fbbf24" strokeWidth="1.5" fill="none" />
+      <polygon points="50,56 46,50 54,50" fill="#fbbf24" />
+    </svg>
+  )
+};
+
+function CardIllustration({ name }) {
+  const Component = AnimalIllustrations[name];
+  if (!Component) return <div className="w-full h-full bg-slate-800" />;
+  return <Component />;
+}
+
+// ─── Radial Opponents Seat Matrix (Placed outside the table boundary) ───
+const getOpponentPosition = (seatIndex) => {
+  const coordinates = [
+    { left: '50%', top: '112%' },  // Me — below container
+    { left: '-14%', top: '45%' },  // Left
+    { left: '114%', top: '45%' },  // Right
+    { left: '20%', top: '-28%' },  // Top-left — above container
+    { left: '80%', top: '-28%' },  // Top-right — above container
+  ];
+  return coordinates[seatIndex] || { left: '50%', top: '50%' };
+};
+
+export default function GameBoard({ room, player, socket, onLeave }) {
+  const me = room?.players?.find((p) => p.id === player.id) || player;
+  const gameLogs = room?.logs ?? [];
+  const currentBid = typeof room?.currentBid === 'number' ? room.currentBid : (room?.currentRevealedCard?.vp ?? 0);
+  const currentBidder = room?.currentBidder || '—';
+  const currentTurnPlayer = room?.players?.[room?.currentTurnIndex];
+  const currentTurnPlayerName = currentTurnPlayer?.name || 'the next player';
+  const isMyTurn = currentTurnPlayer?.id === me.id;
+  const myTotalCash = Array.isArray(me.money)
+    ? me.money.reduce((sum, value) => sum + value, 0)
+    : (typeof me.moneyCount === 'number' ? me.moneyCount * 10 : 0);
+  const canPlaceBid = room?.activePhase === 'AUCTION'
+    && !!room?.currentRevealedCard
+    && (currentBid + 10) <= myTotalCash;
+
+  // Always put ME first, then opponents in join order
+  const roomPlayers = room?.players || [me];
+  const sortedPlayers = [
+    ...roomPlayers.filter((p) => p.id === me.id),
+    ...roomPlayers.filter((p) => p.id !== me.id),
+  ];
+
+  const displayPlayers = sortedPlayers.map((p, idx) => ({
+    id: p.id,
+    name: (p.name || `P${idx + 1}`).toUpperCase(),
+    money: p.id === me.id ? (me.money || p.money || []) : (p.money || []),
+    moneyCount: p.moneyCount,
+    vp: typeof p.vp === 'number' ? p.vp : 0,
+    isMe: p.id === me.id,
+    avatarIdx: idx % AVATAR_LIST.length,
+  }));
+
+  // ✅ Active seat index driven purely by server turn
+  const activeSeatIdx = currentTurnPlayer
+    ? displayPlayers.findIndex((p) => p.id === currentTurnPlayer.id)
+    : -1;
+
+
+
+  const [selectedCardIdx, setSelectedCardIdx] = useState(null);
+  const [hoveredCardIdx, setHoveredCardIdx] = useState(null);
+  const [showBankroll, setShowBankroll] = useState(false);
+
+  const handleDrawCard = () => {
+    if (isMyTurn && room?.activePhase === 'DRAW') {
+      socket.emit('draw-card');
+    }
+  };
+
+  const placeBid = () => {
+    socket.emit('place-bid');
+  };
+
+  // 70-80% visibility wide spacing transform
+  const getFanStyle = (index, total, isHovered, isSelected) => {
+    const mid = (total - 1) / 2;
+    // Wide horizontal spacing for 70-80% card visibility
+    const spacing = 58;
+    const tx = (index - mid) * spacing;
+    // Radial fan tilt angle
+    const angle = total <= 1 ? 0 : (index - mid) * (6 / Math.max(total - 1, 1));
+    const ty = total <= 1 ? 0 : Math.abs(index - mid) * (2 / Math.max(mid, 1));
+
+    let transformStr = `translate(-50%, ${ty}px) translateX(${tx}px) rotate(${angle}deg)`;
+
+    if (isSelected) {
+      transformStr = `translate(-50%, -44px) translateX(${tx}px) scale(1.15)`;
+    } else if (isHovered) {
+      transformStr = `translate(-50%, -32px) translateX(${tx}px) scale(1.1) rotate(0deg)`;
+    }
+
+    return {
+      left: '50%',
+      transform: transformStr,
+      zIndex: isHovered || isSelected ? 60 : index + 5,
+    };
+  };
+
+  const getMoneyCardVisualDetails = (value) => {
+    switch (value) {
+      case 10:
+        return {
+          bg: 'from-[#2d1c10] to-[#120b07] border-[#d4a017]/35 shadow-amber-950/50',
+          text: 'text-amber-200',
+        };
+      case 20:
+        return {
+          bg: 'from-[#162338] to-[#09111f] border-[#60a5fa]/35 shadow-blue-950/50',
+          text: 'text-sky-200',
+        };
+      case 50:
+        return {
+          bg: 'from-[#2f250f] to-[#120f07] border-[#eab308]/40 shadow-yellow-950/50',
+          text: 'text-yellow-100',
+        };
+      default:
+        return {
+          bg: 'from-slate-700 to-slate-900 border-slate-600 shadow-black/40',
+          text: 'text-roar-text',
+        };
+    }
+  };
+
+  const getAvatarGlowClass = (isTurn, idx) => {
+    if (isTurn) {
+      return 'ring-4 ring-[#10b981] shadow-[0_0_25px_#10b981] animate-pulse';
+    }
+    const colorRings = [
+      'ring-2 ring-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]',
+      'ring-2 ring-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.5)]',
+      'ring-2 ring-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)]',
+      'ring-2 ring-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.5)]',
+      'ring-2 ring-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+    ];
+    return colorRings[idx % colorRings.length];
+  };
+  console.log('DP:', JSON.stringify(displayPlayers.map(p => ({ id: p.id, name: p.name, isMe: p.isMe }))), 'total:', displayPlayers.length);
+  return (
+    <div className="min-h-screen h-screen w-screen flex flex-col justify-between bg-[#020308] bg-mesh font-body text-roar-text overflow-hidden select-none relative">
+
+      {/* ── CINEMATIC AMBIENT STADIUM GLOWS & PARTICLES ── */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(29,78,216,0.12)_0%,transparent_75%)] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(16,185,129,0.03)_0%,transparent_60%)] pointer-events-none z-0" />
+
+      {/* Animated dust particles */}
+      <div className="absolute top-[20%] left-[15%] w-1.5 h-1.5 bg-roar-gold/30 rounded-full animate-ping pointer-events-none" />
+      <div className="absolute top-[40%] right-[20%] w-1 h-1 bg-blue-400/20 rounded-full animate-pulse pointer-events-none" />
+      <div className="absolute bottom-[30%] left-[30%] w-2 h-2 bg-emerald-500/10 rounded-full animate-pulse pointer-events-none" />
+
+      {/* ── TOP NAV BAR ── */}
+      <header className="px-6 py-3 flex items-center justify-between border-b border-roar-border/20 bg-[#060a16]/80 backdrop-blur-md z-30 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+        <div className="flex items-center gap-3">
+          <span className="font-display font-black text-2xl tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-[#fef08a] to-[#d4a017] text-glow-gold">
+            ROAR
+          </span>
+          <span className="text-[9px] bg-roar-crimson/25 border border-roar-crimson/50 text-roar-crimson px-2.5 py-0.5 rounded-full font-black tracking-widest uppercase shadow-[0_0_8px_rgba(196,30,58,0.3)]">
+            LIVE ARENA
+          </span>
+        </div>
+
+        <div className="flex items-center gap-5">
+          <div className="bg-[#0b132b]/90 border border-roar-border/40 px-3 py-1 rounded text-xs flex items-center gap-1.5">
+            <span className="text-roar-muted">ROOM CODE:</span>
+            <span className="font-display font-black tracking-wider text-roar-gold">{room?.code || 'X7Y2'}</span>
+          </div>
+
+          <button
+            onClick={onLeave}
+            className="px-3 py-1.5 rounded border border-roar-border/40 text-xs font-semibold uppercase tracking-wider text-roar-muted hover:border-roar-crimson hover:text-roar-crimson transition-all duration-150 active:scale-95"
+          >
+            Leave Match
+          </button>
+        </div>
+      </header>
+
+      {/* ── CENTRAL 3D GAME BOARD PERSPECTIVE ── */}
+      <main className="flex-1 w-full flex items-center justify-center p-4 z-10">
+
+        {/* UNIFIED CONTAINER: Centers all poker table elements together */}
+        <div className="relative w-full max-w-4xl aspect-[2.1/1] flex items-center justify-center">
+
+          {/* THE LUXURIOUS OVAL POKER TABLE SURFACE */}
+          <div
+            className="absolute inset-0 rounded-[50%] bg-gradient-to-b from-[#3a1b0c] to-[#1a0c05] p-[16px] shadow-[0_40px_90px_rgba(0,0,0,0.95)] z-0"
+            style={{ transform: 'rotateX(52deg) scale(1.05)' }}
+          >
+            {/* Inner gold trim ring */}
+            <div className="w-full h-full rounded-[50%] border-[4px] border-[#d4a017]/80 p-[6px] bg-black/60 shadow-[inset_0_0_30px_rgba(0,0,0,0.9)]">
+              {/* Felt Navy Surface */}
+              <div className="w-full h-full rounded-[50%] bg-gradient-to-b from-[#0b1c40] to-[#040818] relative overflow-hidden shadow-[inset_0_0_50px_rgba(0,0,0,0.95)]">
+                {/* Felt Diamond Pattern */}
+                <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#d4a017_1.5px,transparent_1.5px)] [background-size:24px_24px]" />
+                {/* Center table lighting glow */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.2)_0%,transparent_70%)]" />
+              </div>
+            </div>
+          </div>
+
+          {/* DOTTED CONNECTING LINES SVG OVERLAY */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+            <line x1="22%" y1="92%" x2="26%" y2="80%" stroke="#d4a017" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.3" />
+            <line x1="-6%" y1="48%" x2="2%" y2="48%" stroke="#d4a017" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.3" />
+            <line x1="19%" y1="-10%" x2="23%" y2="8%" stroke="#d4a017" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.3" />
+            <line x1="81%" y1="-10%" x2="77%" y2="8%" stroke="#d4a017" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.3" />
+            <line x1="106%" y1="48%" x2="98%" y2="48%" stroke="#d4a017" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.3" />
+          </svg>
+
+          {/* 2D BILLBOARD INTERACTION OVERLAY LAYER */}
+          <div className="absolute inset-0 w-full h-full z-10 pointer-events-none">
+
+            {/* 1. RADIAL SEATS FOR 5 PLAYERS OUTSIDE TABLE */}
+            {displayPlayers.map((opp, idx) => {
+              const oppPos = getOpponentPosition(idx);
+              const isTurn = activeSeatIdx === idx;
+              const OppAvatar = AVATAR_LIST[opp.avatarIdx % AVATAR_LIST.length];
+
+              return (
+                <div
+                  key={opp.id}
+                  className="absolute pointer-events-auto"
+                  style={{
+                    left: oppPos.left,
+                    top: oppPos.top,
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                >
+                  <div className="flex flex-col items-center">
+
+                    {/* Portrait Frame & Glow Ring */}
+                    <div className={`relative p-0.5 rounded-full transition-all duration-300 ${getAvatarGlowClass(isTurn, idx)}`}>
+                      {/* Active turn indicator only appears for the current user */}
+                      {opp.isMe && isTurn ? (
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#10b981] text-[#000] text-[7px] font-black rounded px-1.5 py-0.5 shadow border border-emerald-300 tracking-wider uppercase whitespace-nowrap animate-bounce">
+                          YOUR TURN
+                        </span>
+                      ) : isTurn ? (
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#10b981]/20 text-[#10b981] text-[7px] font-black rounded px-1.5 py-0.5 border border-emerald-500/40 tracking-wider uppercase whitespace-nowrap">
+                          THEIR TURN
+                        </span>
+                      ) : (
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-black/70 text-roar-muted text-[7px] font-black rounded px-1.5 py-0.5 border border-white/10 tracking-wider uppercase whitespace-nowrap">
+                          Waiting for {currentTurnPlayerName}
+                        </span>
+                      )}
+
+                      <div className="w-16 h-16 rounded-full overflow-hidden bg-[#0d0d18] border-2 border-black/80">
+                        <OppAvatar className="w-full h-full object-cover" />
+                      </div>
+                    </div>
+
+                    {/* Nameplate Dashboard */}
+                    <div className="mt-2 px-3 py-1 bg-[#050814]/95 border border-roar-border/40 rounded shadow-2xl flex flex-col items-center min-w-[85px] backdrop-blur">
+                      <span className="text-[10px] font-black text-roar-text truncate max-w-[80px]">
+                        {opp.name}
+                      </span>
+
+                      <div className="flex items-center gap-1.5 mt-0.5 border-t border-white/5 pt-0.5 w-full justify-between">
+                        <span className="text-[9px] text-[#22c55e] font-black">${opp.moneyCount !== undefined ? opp.moneyCount * 10 : opp.money.reduce((a, b) => a + b, 0)}</span>
+                        <span className="text-[8px] text-roar-muted">|</span>
+                        <span className="text-[9px] text-roar-gold font-black">{opp.vp} VP</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* 2. CENTRAL TABLETOP VOID (Deck and revealed card) */}
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-44 pointer-events-auto flex items-center justify-center gap-8"
+            >
+              {/* DECK OF CARDS WITH ROAR LOGO */}
+              <div className="relative w-22 h-32 flex-shrink-0 flex items-center justify-center">
+                {/* 3D stacked deck shadow layers */}
+                <div className="absolute w-20 h-30 bg-[#450a0a] border border-black/80 rounded-lg shadow-lg transform -translate-x-1.5 -translate-y-1.5 z-0" />
+                <div className="absolute w-20 h-30 bg-[#6b1111] border border-black/80 rounded-lg shadow-lg transform -translate-x-0.75 -translate-y-0.75 z-10" />
+
+                {/* Top card face down with ROAR styling */}
+                <div className="absolute w-20 h-30 bg-gradient-to-br from-[#6b1111] to-[#3a0808] border-2 border-[#d4a017]/50 rounded-lg shadow-xl z-20 flex flex-col justify-between p-2">
+                  <div className="w-full flex justify-between">
+                    <span className="text-[8px] text-roar-gold/30 font-bold">ROAR</span>
+                    <span className="text-[8px] text-roar-gold/30 font-bold">🃏</span>
+                  </div>
+
+                  {/* Ornate ROAR Shield / Crest logo */}
+                  <div className="w-9 h-9 rounded-full border-2 border-[#d4a017]/40 bg-black/40 mx-auto flex items-center justify-center shadow-inner">
+                    <span className="font-display font-black text-xs text-roar-gold tracking-tight select-none">R</span>
+                  </div>
+
+                  <div className="w-full text-center">
+                    <span className="text-[7.5px] font-black text-roar-gold/60 tracking-widest">{room?.deck?.length ?? 24} CARDS</span>
+                  </div>
+                </div>
+
+                {/* PULSING ACTIVE USER DRAW OVERLAY BUTTON */}
+                {room?.activePhase === 'DRAW' && isMyTurn && (
+                  <button
+                    id="draw-animal-btn"
+                    onClick={handleDrawCard}
+                    className="absolute inset-0 w-full h-full bg-roar-gold/15 border-2 border-[#d4a017] rounded-lg z-30 animate-pulse-glow flex items-center justify-center cursor-pointer"
+                  >
+                    <span className="bg-gradient-to-r from-[#ca8a04] to-[#fef08a] text-[#000] font-display font-black text-[9px] px-2.5 py-1 rounded shadow-lg border border-yellow-200 tracking-wider transform hover:scale-105 active:scale-95 transition-transform">
+                      DRAW
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              {/* REVEAL ZONE: empty until a valid draw populates room.currentRevealedCard */}
+              <div className="relative w-22 h-32 flex-shrink-0 flex items-center justify-center">
+                {room?.currentRevealedCard ? (
+                  <div className="w-20 h-30 bg-gradient-to-b from-[#1b1b2d] to-[#0a0a14] border-2 border-[#d4a017] rounded-lg shadow-[0_0_20px_rgba(212,160,23,0.6)] z-20 flex flex-col justify-between p-2 animate-scale-in">
+                    <div className="w-full flex justify-between items-center border-b border-roar-border/40 pb-0.5">
+                      <span className="text-[8px] text-roar-gold font-black uppercase tracking-wider truncate max-w-[42px]">
+                        {room.currentRevealedCard.name}
+                      </span>
+                      <span className="text-[8.5px] text-[#22c55e] font-black">ACTIVE</span>
+                    </div>
+
+                    <div className="w-full h-14 rounded bg-black/40 overflow-hidden relative border border-white/5" />
+
+                    <div className="w-full text-center pt-0.5 border-t border-roar-border/40 flex justify-between items-center text-[7.5px] text-roar-gold font-black uppercase">
+                      <span>ANIMAL</span>
+                      <span className="text-glow-gold">{room.currentRevealedCard.vp} VP</span>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+
+            </div>
+
+            {/* 3. ELEGANT FLOATING AUCTION PANEL (Directly beneath auction card) */}
+            {room?.activePhase === 'AUCTION' && room?.currentRevealedCard && (
+              <div className="absolute bottom-[2%] left-1/2 -translate-x-1/2 w-full max-w-sm pointer-events-auto bg-[#040815]/95 border border-[#d4a017]/50 px-4 py-2 rounded-lg text-center shadow-[0_0_20px_rgba(0,0,0,0.8)] z-25 flex items-center justify-between backdrop-blur">
+                <div className="text-left">
+                  <span className="text-[8px] text-roar-muted uppercase font-black tracking-widest block">CURRENT BID</span>
+                  <span className="text-xl font-display font-black text-[#22c55e] text-glow-green">${currentBid}</span>
+                </div>
+
+                <div className="bg-white/5 h-8 w-px" />
+
+                <div className="text-left">
+                  <span className="text-[8px] text-roar-muted uppercase font-black tracking-widest block">HIGHEST BIDDER</span>
+                  <span className="text-xs font-black text-roar-gold uppercase tracking-wider">{currentBidder}</span>
+                </div>
+
+                {canPlaceBid ? (
+                  <button
+                    onClick={placeBid}
+                    className="bg-gradient-to-r from-[#d4a017] to-[#fef08a] hover:from-[#eab308] hover:to-[#fef08a] text-black font-display font-black text-[9px] px-3 py-1.5 rounded uppercase tracking-wider border border-yellow-200/50 shadow transition-all active:scale-95"
+                  >
+                    BID +$10
+                  </button>
+                ) : (
+                  <span className="text-[9px] font-black uppercase tracking-wider text-roar-muted">
+                    Insufficient cash
+                  </span>
+                )}
+              </div>
+            )}
+
+          </div>
+
+        </div>
+      </main>
+
+      {/* ── BOTTOM PRIVATE HUD (Fanned hand widely spread) ── */}
+      <footer className="w-full flex flex-col justify-end relative pb-4 z-20">
+
+        {/* HUD Info bar */}
+        <div className="w-full max-w-xl mx-auto flex justify-between items-center px-6 mb-2 text-xs text-roar-muted font-semibold">
+          <div className="flex items-center gap-1.5">
+            <span>MY BANKROLL:</span>
+            <span className="text-[#22c55e] font-black">
+              ${me.money?.reduce((sum, val) => sum + val, 0) ?? 140}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[8px] text-roar-gold font-bold bg-roar-gold/10 border border-roar-gold/20 px-2 py-0.5 rounded uppercase tracking-wider">
+              70-80% VISIBILITY WIDE FAN
+            </span>
+          </div>
+        </div>
+
+        {/* Fanned Cards container */}
+        <div className="flex justify-center items-end relative h-40 w-full max-w-2xl mx-auto px-6">
+          {displayPlayers[0].money.map((val, idx) => {
+            const isSelected = selectedCardIdx === idx;
+            const isHovered = hoveredCardIdx === idx;
+            const visual = getMoneyCardVisualDetails(val);
+
+            return (
+              <button
+                key={idx}
+                onClick={() => setSelectedCardIdx(isSelected ? null : idx)}
+                onMouseEnter={() => setHoveredCardIdx(idx)}
+                onMouseLeave={() => setHoveredCardIdx(null)}
+                className={`absolute w-24 h-36 rounded-lg border-2 flex items-center justify-center p-3.5 transition-all duration-200 select-none shadow-2xl bg-gradient-to-b ${visual.bg}`}
+                style={getFanStyle(idx, displayPlayers[0].money.length, isHovered, isSelected)}
+              >
+                {/* Ornate Inner Border Layer */}
+                <div className="absolute inset-1 pointer-events-none border border-white/5 rounded-md" />
+
+                <span className={`relative z-10 text-2xl font-black tracking-tight ${visual.text}`}>${val}</span>
+
+              </button>
+            );
+          })}
+        </div>
+      </footer>
+
+      {/* ── BOTTOM-LEFT GAME LOG PANEL (Glassmorphism HUD) ── */}
+      <div className="fixed bottom-6 left-6 z-30 pointer-events-auto">
+        <div className="bg-[#050918]/80 backdrop-blur-md border border-white/10 rounded-lg p-4 w-60 h-44 shadow-[0_15px_35px_rgba(0,0,0,0.8)] text-left flex flex-col justify-between">
+          <div>
+            <h3 className="font-display font-black text-xs tracking-wider text-roar-gold border-b border-white/5 pb-1.5 mb-2 uppercase">
+              GAME LOG
+            </h3>
+
+            <ul className="space-y-1.5">
+              {gameLogs.length > 0 ? (
+                gameLogs.map((log, idx) => {
+                  const message = typeof log === 'string' ? log : log.message;
+                  const tone = typeof log === 'string' ? 'neutral' : log.tone;
+                  const dotClass = tone === 'bid'
+                    ? 'bg-emerald-400'
+                    : tone === 'draw'
+                      ? 'bg-roar-gold'
+                      : tone === 'system'
+                        ? 'bg-roar-muted'
+                        : 'bg-roar-gold-light';
+
+                  return (
+                    <li key={`${message}-${idx}`} className="text-[10px] text-roar-muted flex items-center gap-1.5">
+                      <span className={`w-1.5 h-1.5 rounded-full ${dotClass}`} />
+                      <span className="truncate">{message}</span>
+                    </li>
+                  );
+                })
+              ) : (
+                <li className="text-[10px] text-roar-muted flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-roar-muted" />
+                  Waiting for live game events
+                </li>
+              )}
+            </ul>
+          </div>
+
+          <span className="text-[8px] text-roar-muted/40 uppercase font-black tracking-widest self-end">
+            STAGE 2 MOCKUP
+          </span>
+        </div>
+      </div>
+
+      {/* ── BOTTOM-RIGHT HIDDEN BANKROLL TOGGLE BUTTON ── */}
+      <div className="fixed bottom-6 right-6 z-30 pointer-events-auto">
+        <button
+          onClick={() => setShowBankroll(!showBankroll)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border font-display font-black text-xs uppercase tracking-wider transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.25)] ${showBankroll
+            ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 shadow-[0_0_20px_#10b981]'
+            : 'bg-black/80 border-[#10b981] text-emerald-400 hover:bg-emerald-500/10'
+            }`}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0110 0v4" />
+          </svg>
+          HIDDEN BANKROLL
+        </button>
+
+        {/* Sliding Panel overlaying when bankroll details toggled */}
+        {showBankroll && (
+          <div className="absolute bottom-14 right-0 bg-[#050813]/95 border border-[#10b981]/50 rounded-lg p-3 w-56 shadow-glow-green text-left backdrop-blur-md animate-scale-in">
+            <h4 className="text-[9px] font-black text-emerald-400 uppercase tracking-widest border-b border-white/5 pb-1 mb-1.5">
+              Secure Ledger
+            </h4>
+            <div className="space-y-1 text-[10px] text-roar-muted font-mono">
+              <div className="flex justify-between">
+                <span>Total Cards:</span>
+                <span className="text-roar-text">7 bills</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Locked VP:</span>
+                <span className="text-roar-gold">1000 VP</span>
+              </div>
+              <div className="flex justify-between text-emerald-400 font-bold border-t border-white/5 pt-1 mt-1">
+                <span>Scrubbed State:</span>
+                <span>Enforced ⚡</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+    </div>
+  );
+}
