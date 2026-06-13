@@ -44,10 +44,10 @@
 
 ---
 
-##  Core Gameplay Loop Flow
+## 🔄 Core Gameplay Loop Flow
 
-
-
+```mermaid
+graph TD
     A[Phase: DRAW] -->|draw-card event| B(Free Draw: Card to Drawer Inventory)
     B --> C[Phase: CHOOSE_ACTION]
     C -->|chooseAction: keep-card| D[Keep Card: Turn Advances]
