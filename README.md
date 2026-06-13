@@ -46,7 +46,6 @@
 
 ##  Core Gameplay Loop Flow
 
-graph TD
 
     A[Phase: DRAW] -->|draw-card event| B(Free Draw: Card to Drawer Inventory)
     B --> C[Phase: CHOOSE_ACTION]
@@ -60,14 +59,16 @@ graph TD
 
 ## Repository Structure
 
-roar-game/
-├── backend/
-│   ├── server.js              # Express + Socket.io event loop orchestration
-│   └── package.json           # Server environments & dependencies
-└── frontend/
-    ├── src/
-    │   ├── components/        # Game UI views (Lobby, GameBoard, Auction Panels)
-    │   ├── App.jsx            # Core state manager and WebSocket connection router
-    │   └── main.jsx           # Client application entrypoint
-    ├── vite.config.js         # Tooling and dev-proxy network layout
-    └── package.json           # React dependencies
+    roar-game/
+      ├── backend/
+      │     ├── server.js          # Express + Socket.io loop & settlement logic
+      │     └── package.json       # Server dependencies & scripts
+      │
+      └── frontend/
+            ├── src/
+            │     ├── components/  # Game UI layouts (Lobby, GameBoard, Auction)
+            │     ├── App.jsx      # Core state manager & WebSocket routing
+            │     └── main.jsx     # Client entrypoint
+            │
+            ├── vite.config.js     # Tooling configuration & local proxy setup
+            └── package.json       # React & client-side dependencies
