@@ -299,17 +299,24 @@ const getOpponentPosition = (seatIndex) => {
 export default function GameBoard({ room, player, socket, onLeave }) {
   const me = room?.players?.find((p) => p.id === player.id) || player;
   const gameLogs = room?.logs ?? [];
-  const currentBid = typeof room?.currentBid === 'number' ? room.currentBid : (room?.currentRevealedCard?.vp ?? 0);
-  const currentBidder = room?.currentBidder || '—';
+  const currentBid = typeof room?.currentBid === 'number' ? room.currentBid : 0;
+  
+  const highestBidderPlayer = room?.players?.find((p) => p.id === room.highestBidder);
+  const currentBidderName = highestBidderPlayer ? (highestBidderPlayer.id === me.id ? 'YOU' : highestBidderPlayer.name) : '—';
+
   const currentTurnPlayer = room?.players?.[room?.currentTurnIndex];
   const currentTurnPlayerName = currentTurnPlayer?.name || 'the next player';
   const isMyTurn = currentTurnPlayer?.id === me.id;
+
   const myTotalCash = Array.isArray(me.money)
     ? me.money.reduce((sum, value) => sum + value, 0)
     : (typeof me.moneyCount === 'number' ? me.moneyCount * 10 : 0);
-  const canPlaceBid = room?.activePhase === 'AUCTION'
-    && !!room?.currentRevealedCard
-    && (currentBid + 10) <= myTotalCash;
+
+  const isDrawer = room?.drawerId === me.id;
+  const hasPassed = room?.passedPlayers?.includes(me.id);
+  const nextBidAmount = currentBid + 10;
+  const hasEnoughCashForBid = myTotalCash >= nextBidAmount;
+  const canPlaceBid = room?.activePhase === 'AUCTION' && !isDrawer && !hasPassed && hasEnoughCashForBid;
 
   // Always put ME first, then opponents in join order
   const roomPlayers = room?.players || [me];
@@ -324,6 +331,8 @@ export default function GameBoard({ room, player, socket, onLeave }) {
     money: p.id === me.id ? (me.money || p.money || []) : (p.money || []),
     moneyCount: p.moneyCount,
     vp: typeof p.vp === 'number' ? p.vp : 0,
+    animals: p.animals || [],
+    animalsCount: Array.isArray(p.animals) ? p.animals.length : 0,
     isMe: p.id === me.id,
     avatarIdx: idx % AVATAR_LIST.length,
   }));
@@ -332,8 +341,6 @@ export default function GameBoard({ room, player, socket, onLeave }) {
   const activeSeatIdx = currentTurnPlayer
     ? displayPlayers.findIndex((p) => p.id === currentTurnPlayer.id)
     : -1;
-
-
 
   const [selectedCardIdx, setSelectedCardIdx] = useState(null);
   const [hoveredCardIdx, setHoveredCardIdx] = useState(null);
@@ -348,6 +355,23 @@ export default function GameBoard({ room, player, socket, onLeave }) {
   const placeBid = () => {
     socket.emit('place-bid');
   };
+
+  const passBid = () => {
+    socket.emit('pass-bid');
+  };
+
+  const chooseAction = (action) => {
+    socket.emit('choose-action', { action });
+  };
+
+  // Check if any opponent holds a matching card for ROAR Challenge eligibility
+  const hasRoarChallengeable = room?.activePhase === 'CHOOSE_ACTION' &&
+    room?.currentRevealedCard &&
+    room?.players?.some(
+      (p) => p.id !== me.id &&
+        Array.isArray(p.animals) &&
+        p.animals.some((a) => a.name === room.currentRevealedCard.name)
+    );
 
   // 70-80% visibility wide spacing transform
   const getFanStyle = (index, total, isHovered, isSelected) => {
@@ -534,7 +558,7 @@ export default function GameBoard({ room, player, socket, onLeave }) {
 
                       <div className="flex items-center gap-1.5 mt-0.5 border-t border-white/5 pt-0.5 w-full justify-between">
                         <span className="text-[9px] text-[#22c55e] font-black">${opp.moneyCount !== undefined ? opp.moneyCount * 10 : opp.money.reduce((a, b) => a + b, 0)}</span>
-                        <span className="text-[8px] text-roar-muted">|</span>
+                        <span className="text-[9px] text-amber-500 font-bold" title="Inventory Cards">🐾{opp.animalsCount}</span>
                         <span className="text-[9px] text-roar-gold font-black">{opp.vp} VP</span>
                       </div>
                     </div>
@@ -608,33 +632,122 @@ export default function GameBoard({ room, player, socket, onLeave }) {
 
             </div>
 
-            {/* 3. ELEGANT FLOATING AUCTION PANEL (Directly beneath auction card) */}
+                {room?.activePhase === 'CHOOSE_ACTION' && room?.currentRevealedCard && (
+              isMyTurn ? (
+                /* ── ACTIVE PLAYER: Choice buttons ── */
+                <div className="absolute bottom-[-4%] left-1/2 -translate-x-1/2 w-full max-w-sm pointer-events-auto z-30">
+                  {/* Glowing card reveal header */}
+                  <div className="mb-3 text-center">
+                    <span className="inline-block text-[9px] font-black uppercase tracking-[0.25em] text-roar-gold/70 border border-roar-gold/20 bg-roar-gold/5 px-3 py-1 rounded-full">
+                      You drew&nbsp;
+                      <span className="text-roar-gold">{room.currentRevealedCard.name}</span>
+                      &nbsp;·&nbsp;{room.currentRevealedCard.vp} VP
+                    </span>
+                  </div>
+
+                  {/* Choice button row */}
+                  <div className="flex items-stretch gap-3">
+
+                    {/* KEEP CARD */}
+                    <button
+                      id="action-keep-card-btn"
+                      onClick={() => chooseAction('keep-card')}
+                      className="group flex-1 flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 border-emerald-500/50 bg-emerald-950/40 hover:bg-emerald-900/50 hover:border-emerald-400 hover:shadow-[0_0_18px_rgba(16,185,129,0.4)] transition-all duration-200 active:scale-95 backdrop-blur"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <span className="text-[10px] font-black text-emerald-300 uppercase tracking-widest">Keep Card</span>
+                      <span className="text-[8px] text-emerald-500/70 font-semibold">End turn</span>
+                    </button>
+
+                    {/* TRADE CARD */}
+                    <button
+                      id="action-initiate-trade-btn"
+                      onClick={() => chooseAction('initiate-trade')}
+                      className="group flex-1 flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 border-[#d4a017]/50 bg-[#d4a017]/5 hover:bg-[#d4a017]/15 hover:border-roar-gold hover:shadow-[0_0_18px_rgba(212,160,23,0.4)] transition-all duration-200 active:scale-95 backdrop-blur"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5 text-roar-gold group-hover:scale-110 transition-transform">
+                        <polyline points="16 3 21 8 16 13" />
+                        <line x1="21" y1="8" x2="9" y2="8" />
+                        <polyline points="8 21 3 16 8 11" />
+                        <line x1="3" y1="16" x2="15" y2="16" />
+                      </svg>
+                      <span className="text-[10px] font-black text-roar-gold uppercase tracking-widest">Trade Card</span>
+                      <span className="text-[8px] text-roar-gold/50 font-semibold">Initiate auction</span>
+                    </button>
+
+                  </div>
+                </div>
+              ) : (
+                /* ── ALL OTHER PLAYERS: Passive waiting marquee ── */
+                <div className="absolute bottom-[-2%] left-1/2 -translate-x-1/2 w-full max-w-sm pointer-events-none z-30 overflow-hidden">
+                  <div className="bg-[#040815]/90 border border-roar-gold/25 rounded-lg py-2 px-4 flex items-center gap-3 shadow-[0_0_20px_rgba(0,0,0,0.8)] backdrop-blur">
+                    {/* Pulsing dot */}
+                    <span className="flex-shrink-0 w-2 h-2 rounded-full bg-roar-gold animate-pulse" />
+                    {/* Scrolling marquee text */}
+                    <div className="overflow-hidden flex-1">
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-roar-gold/80 whitespace-nowrap animate-[marquee_10s_linear_infinite]">
+                        Waiting for {currentTurnPlayerName} to choose a move…&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
+                        Waiting for {currentTurnPlayerName} to choose a move…
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )
+            )}
+
+            {/* 4. ELEGANT FLOATING AUCTION PANEL — only during AUCTION phase */}
             {room?.activePhase === 'AUCTION' && room?.currentRevealedCard && (
-              <div className="absolute bottom-[2%] left-1/2 -translate-x-1/2 w-full max-w-sm pointer-events-auto bg-[#040815]/95 border border-[#d4a017]/50 px-4 py-2 rounded-lg text-center shadow-[0_0_20px_rgba(0,0,0,0.8)] z-25 flex items-center justify-between backdrop-blur">
-                <div className="text-left">
-                  <span className="text-[8px] text-roar-muted uppercase font-black tracking-widest block">CURRENT BID</span>
-                  <span className="text-xl font-display font-black text-[#22c55e] text-glow-green">${currentBid}</span>
+              <div className="absolute bottom-[2%] left-1/2 -translate-x-1/2 w-full max-w-md pointer-events-auto bg-[#040815]/95 border border-[#d4a017]/50 px-4 py-3 rounded-lg text-center shadow-[0_0_20px_rgba(0,0,0,0.8)] z-25 flex flex-col gap-2.5 backdrop-blur">
+                <div className="flex items-center justify-between">
+                  <div className="text-left">
+                    <span className="text-[8px] text-roar-muted uppercase font-black tracking-widest block">CURRENT BID</span>
+                    <span className="text-xl font-display font-black text-[#22c55e] text-glow-green">${currentBid}</span>
+                  </div>
+
+                  <div className="bg-white/5 h-8 w-px" />
+
+                  <div className="text-left">
+                    <span className="text-[8px] text-roar-muted uppercase font-black tracking-widest block">HIGHEST BIDDER</span>
+                    <span className="text-xs font-black text-roar-gold uppercase tracking-wider">{currentBidderName}</span>
+                  </div>
+
+                  <div className="bg-white/5 h-8 w-px" />
+
+                  <div className="flex items-center gap-2">
+                    {isDrawer ? (
+                      <span className="text-[9px] font-black uppercase tracking-wider text-roar-gold/60 border border-roar-gold/20 bg-roar-gold/5 px-2.5 py-1 rounded">
+                        Selling your card...
+                      </span>
+                    ) : hasPassed ? (
+                      <span className="text-[9px] font-black uppercase tracking-wider text-roar-crimson/80 border border-roar-crimson/20 bg-roar-crimson/5 px-2.5 py-1 rounded">
+                        PASSED
+                      </span>
+                    ) : (
+                      <>
+                        <button
+                          onClick={placeBid}
+                          disabled={!hasEnoughCashForBid}
+                          className={`font-display font-black text-[9px] px-3 py-1.5 rounded uppercase tracking-wider border shadow transition-all active:scale-95 ${
+                            hasEnoughCashForBid
+                              ? 'bg-gradient-to-r from-[#d4a017] to-[#fef08a] hover:from-[#eab308] hover:to-[#fef08a] text-black border-yellow-200/50'
+                              : 'bg-white/5 border-white/10 text-roar-muted cursor-not-allowed opacity-50'
+                          }`}
+                          title={!hasEnoughCashForBid ? 'Insufficient cash to bid' : `Bid $${nextBidAmount}`}
+                        >
+                          BID +$10
+                        </button>
+                        <button
+                          onClick={passBid}
+                          className="bg-roar-crimson/20 hover:bg-roar-crimson/40 text-roar-crimson border border-roar-crimson/40 font-display font-black text-[9px] px-3 py-1.5 rounded uppercase tracking-wider shadow transition-all active:scale-95"
+                        >
+                          PASS
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
-
-                <div className="bg-white/5 h-8 w-px" />
-
-                <div className="text-left">
-                  <span className="text-[8px] text-roar-muted uppercase font-black tracking-widest block">HIGHEST BIDDER</span>
-                  <span className="text-xs font-black text-roar-gold uppercase tracking-wider">{currentBidder}</span>
-                </div>
-
-                {canPlaceBid ? (
-                  <button
-                    onClick={placeBid}
-                    className="bg-gradient-to-r from-[#d4a017] to-[#fef08a] hover:from-[#eab308] hover:to-[#fef08a] text-black font-display font-black text-[9px] px-3 py-1.5 rounded uppercase tracking-wider border border-yellow-200/50 shadow transition-all active:scale-95"
-                  >
-                    BID +$10
-                  </button>
-                ) : (
-                  <span className="text-[9px] font-black uppercase tracking-wider text-roar-muted">
-                    Insufficient cash
-                  </span>
-                )}
               </div>
             )}
 
@@ -648,11 +761,20 @@ export default function GameBoard({ room, player, socket, onLeave }) {
 
         {/* HUD Info bar */}
         <div className="w-full max-w-xl mx-auto flex justify-between items-center px-6 mb-2 text-xs text-roar-muted font-semibold">
-          <div className="flex items-center gap-1.5">
-            <span>MY BANKROLL:</span>
-            <span className="text-[#22c55e] font-black">
-              ${me.money?.reduce((sum, val) => sum + val, 0) ?? 140}
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <span>MY BANKROLL:</span>
+              <span className="text-[#22c55e] font-black">
+                ${me.money?.reduce((sum, val) => sum + val, 0) ?? 0}
+              </span>
+            </div>
+            <span className="text-roar-muted/40">|</span>
+            <div className="flex items-center gap-1.5">
+              <span>MY VP:</span>
+              <span className="text-roar-gold font-black">
+                {me.vp || 0} VP
+              </span>
+            </div>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-[8px] text-roar-gold font-bold bg-roar-gold/10 border border-roar-gold/20 px-2 py-0.5 rounded uppercase tracking-wider">

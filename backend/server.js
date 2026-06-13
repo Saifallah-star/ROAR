@@ -69,6 +69,162 @@ function shuffle(array) {
   return array;
 }
 
+function findExactBillsSubset(moneyArray, targetAmount) {
+  let bestSubset = null;
+  function backtrack(index, currentSum, currentSubset) {
+    if (currentSum === targetAmount) {
+      bestSubset = [...currentSubset];
+      return true;
+    }
+    if (currentSum > targetAmount || index >= moneyArray.length) {
+      return false;
+    }
+    currentSubset.push(moneyArray[index]);
+    if (backtrack(index + 1, currentSum + moneyArray[index], currentSubset)) {
+      return true;
+    }
+    currentSubset.pop();
+    if (backtrack(index + 1, currentSum, currentSubset)) {
+      return true;
+    }
+    return false;
+  }
+  const sorted = [...moneyArray].sort((a, b) => b - a);
+  backtrack(0, 0, []);
+  return bestSubset;
+}
+
+function rebuildMoney(total) {
+  const bills = [];
+  let rem = total;
+  while (rem >= 50) { bills.push(50); rem -= 50; }
+  while (rem >= 20) { bills.push(20); rem -= 20; }
+  while (rem >= 10) { bills.push(10); rem -= 10; }
+  return bills;
+}
+
+function settleAuctionPayment(winner, seller, amount) {
+  let subset = findExactBillsSubset(winner.money, amount);
+  if (subset) {
+    for (const bill of subset) {
+      const idx = winner.money.indexOf(bill);
+      if (idx !== -1) winner.money.splice(idx, 1);
+      seller.money.push(bill);
+    }
+    return;
+  }
+  let bestSum = Infinity;
+  let bestSubset = null;
+  function backtrack(index, currentSum, currentSubset) {
+    if (currentSum >= amount) {
+      if (currentSum < bestSum) {
+        bestSum = currentSum;
+        bestSubset = [...currentSubset];
+      }
+      return;
+    }
+    if (index >= winner.money.length) return;
+    currentSubset.push(winner.money[index]);
+    backtrack(index + 1, currentSum + winner.money[index], currentSubset);
+    currentSubset.pop();
+    backtrack(index + 1, currentSum, currentSubset);
+  }
+  backtrack(0, 0, []);
+  if (bestSubset) {
+    for (const bill of bestSubset) {
+      const idx = winner.money.indexOf(bill);
+      if (idx !== -1) winner.money.splice(idx, 1);
+      seller.money.push(bill);
+    }
+    const change = bestSum - amount;
+    if (change > 0) {
+      let changeSubset = findExactBillsSubset(seller.money, change);
+      if (changeSubset) {
+        for (const bill of changeSubset) {
+          const idx = seller.money.indexOf(bill);
+          if (idx !== -1) seller.money.splice(idx, 1);
+          winner.money.push(bill);
+        }
+      } else {
+        const winnerTotal = winner.money.reduce((a, b) => a + b, 0) + change;
+        const sellerTotal = seller.money.reduce((a, b) => a + b, 0) - change;
+        winner.money = rebuildMoney(winnerTotal);
+        seller.money = rebuildMoney(sellerTotal);
+      }
+    }
+  } else {
+    const winnerTotal = winner.money.reduce((a, b) => a + b, 0) - amount;
+    const sellerTotal = seller.money.reduce((a, b) => a + b, 0) + amount;
+    winner.money = rebuildMoney(winnerTotal);
+    seller.money = rebuildMoney(sellerTotal);
+  }
+}
+
+
+function checkAuctionResolution(room, roomCode) {
+  const eligibleOpponents = room.players.filter(
+    (p) => p.id !== room.drawerId && !room.passedPlayers.includes(p.id)
+  );
+
+  const nextBid = (room.currentBid || 0) + 10;
+  const stillActive = eligibleOpponents.filter((p) => {
+    const cash = Array.isArray(p.money) ? p.money.reduce((s, v) => s + v, 0) : 0;
+    if (cash < nextBid) {
+      room.passedPlayers.push(p.id);
+      addRoomLog(room, `${p.name} auto-passed (insufficient funds).`, 'system');
+      return false;
+    }
+    return true;
+  });
+
+  const totalOpponents = room.players.filter((p) => p.id !== room.drawerId);
+  const allPassed = totalOpponents.every((p) => room.passedPlayers.includes(p.id));
+
+  const shouldResolve = allPassed || stillActive.length === 0 ||
+    (stillActive.length === 1 && room.highestBidder === stillActive[0].id);
+
+  if (shouldResolve) {
+    if (!room.highestBidder) {
+      addRoomLog(room, 'No bids placed — drawer keeps the card.', 'system');
+    } else {
+      const winner = room.players.find((p) => p.id === room.highestBidder);
+      const seller = room.players.find((p) => p.id === room.drawerId);
+      const card   = room.currentRevealedCard;
+      const salePrice = room.currentBid;
+
+      if (winner && seller && card) {
+        seller.animals = seller.animals.filter((a) => a.id !== card.id);
+        seller.vp = Math.max(0, (seller.vp || 0) - card.vp);
+
+        if (!Array.isArray(winner.animals)) winner.animals = [];
+        winner.animals.push(card);
+        winner.vp = (winner.vp || 0) + card.vp;
+
+        settleAuctionPayment(winner, seller, salePrice);
+
+        addRoomLog(room, `${winner.name} won ${card.name} for $${salePrice}!`, 'bid');
+        addRoomLog(room, `${seller.name} received $${salePrice}.`, 'system');
+        console.log(`[ROAR] ✦ Room ${roomCode}: "${winner.name}" won "${card.name}" for $${salePrice}.`);
+      }
+    }
+
+    room.currentRevealedCard = null;
+    room.drawerId = null;
+    room.activePhase = 'DRAW';
+    room.currentBid = 0;
+    room.highestBidder = null;
+    room.passedPlayers = [];
+    room.currentTurnIndex = (room.currentTurnIndex + 1) % room.players.length;
+    console.log(`[ROAR] ✦ Room ${roomCode}: Auction resolved.`);
+    broadcastRoom(roomCode);
+    return true;
+  }
+
+  broadcastRoom(roomCode);
+  return false;
+}
+
+
 function getScrubbedRoom(room, targetPlayerId) {
   if (!room) return null;
   return {
@@ -211,8 +367,10 @@ io.on('connection', (socket) => {
     room.currentTurnIndex = 0;
     room.activePhase = 'DRAW';
     room.currentRevealedCard = null;
+    room.drawerId = null;       // socket.id of the player who drew the current card
     room.currentBid = 0;
-    room.currentBidder = '';
+    room.highestBidder = null;  // socket.id of current highest bidder
+    room.passedPlayers = [];    // socket.ids of opponents who passed this auction
 
     addRoomLog(room, 'Match started.', 'system');
 
@@ -252,15 +410,74 @@ io.on('connection', (socket) => {
     }
 
     const card = room.deck.pop();
+
+    // ── FREE DRAW: immediately add card to drawer's inventory ──────────────
+    if (!Array.isArray(currentPlayer.animals)) currentPlayer.animals = [];
+    currentPlayer.animals.push(card);
+    currentPlayer.vp = (currentPlayer.vp || 0) + card.vp;
+
     room.currentRevealedCard = card;
-    room.activePhase = 'AUCTION';
-    room.currentBid = card.vp;
-    room.currentBidder = currentPlayer.name;
+    room.drawerId = socket.id;
+    room.activePhase = 'CHOOSE_ACTION';
 
     addRoomLog(room, `${currentPlayer.name} drew ${card.name} (${card.vp} VP)`, 'draw');
-
-    console.log(`[ROAR] ✦ Room ${roomCode}: "${currentPlayer.name}" drew "${card.name}" (${card.vp} VP)`);
+    console.log(`[ROAR] ✦ Room ${roomCode}: "${currentPlayer.name}" drew "${card.name}" — awaiting Keep / Trade`);
     broadcastRoom(roomCode);
+  });
+
+  // ── choose-action ────────────────────────────────────────────────────────────
+  // Actions: 'keep-card' | 'initiate-trade'
+  socket.on('choose-action', ({ action } = {}) => {
+    const roomCode = socket.data.roomCode;
+    const room = roomCode && rooms[roomCode];
+    if (!room) return;
+
+    if (room.status !== 'PLAYING') {
+      socket.emit('roar-error', { message: 'The match is not active.' });
+      return;
+    }
+    if (room.activePhase !== 'CHOOSE_ACTION') {
+      socket.emit('roar-error', { message: 'No card is pending a choice.' });
+      return;
+    }
+
+    const currentPlayer = room.players[room.currentTurnIndex];
+    if (!currentPlayer || currentPlayer.id !== socket.id) {
+      socket.emit('roar-error', { message: 'Only the active player can choose.' });
+      return;
+    }
+
+    if (action === 'keep-card') {
+      // ── KEEP: card already sits in drawer's inventory; just clear table & advance
+      const keptCardName = room.currentRevealedCard?.name ?? 'the card';
+      const nextIdx = (room.currentTurnIndex + 1) % room.players.length;
+      const nextPlayerName = room.players[nextIdx]?.name ?? 'next player';
+
+      room.currentRevealedCard = null;
+      room.drawerId = null;
+      room.activePhase = 'DRAW';
+      room.currentTurnIndex = nextIdx;
+
+      addRoomLog(room, `${currentPlayer.name} kept ${keptCardName}.`, 'system');
+      addRoomLog(room, `Turn passes to ${nextPlayerName}.`, 'system');
+      console.log(`[ROAR] ✦ Room ${roomCode}: "${currentPlayer.name}" kept "${keptCardName}".`);
+      broadcastRoom(roomCode);
+
+    } else if (action === 'initiate-trade') {
+      // ── TRADE: open the card for opponent bidding (card stays in drawer inventory
+      //    until auction resolves — if a winner emerges the card transfers to them)
+      room.activePhase = 'AUCTION';
+      room.currentBid = 0;
+      room.highestBidder = null;
+      room.passedPlayers = [];
+
+      addRoomLog(room, `${currentPlayer.name} put ${room.currentRevealedCard.name} up for auction!`, 'bid');
+      console.log(`[ROAR] ✦ Room ${roomCode}: "${currentPlayer.name}" initiated trade auction.`);
+      broadcastRoom(roomCode);
+
+    } else {
+      socket.emit('roar-error', { message: 'Invalid action. Use keep-card or initiate-trade.' });
+    }
   });
 
   // ── place-bid ─────────────────────────────────────────────────────────────
@@ -273,20 +490,27 @@ io.on('connection', (socket) => {
       socket.emit('roar-error', { message: 'The match is not active.' });
       return;
     }
-
     if (room.activePhase !== 'AUCTION') {
       socket.emit('roar-error', { message: 'Bidding is only allowed during the auction.' });
       return;
     }
+    // Drawer cannot bid on their own card
+    if (socket.id === room.drawerId) {
+      socket.emit('roar-error', { message: 'You cannot bid on your own card.' });
+      return;
+    }
+    // Already passed
+    if (room.passedPlayers.includes(socket.id)) {
+      socket.emit('roar-error', { message: 'You have already passed this auction.' });
+      return;
+    }
 
-    const currentBid = typeof room.currentBid === 'number'
-      ? room.currentBid
-      : (room.currentRevealedCard?.vp ?? 0);
-    const nextBid = currentBid + 10;
-    const bidder = room.players.find((p) => p.id === socket.id)?.name || 'Unknown';
+    const nextBid = (typeof room.currentBid === 'number' ? room.currentBid : 0) + 10;
     const bidderRecord = room.players.find((p) => p.id === socket.id);
-    const bidderTotalCash = Array.isArray(bidderRecord?.money)
-      ? bidderRecord.money.reduce((sum, value) => sum + value, 0)
+    if (!bidderRecord) return;
+
+    const bidderTotalCash = Array.isArray(bidderRecord.money)
+      ? bidderRecord.money.reduce((s, v) => s + v, 0)
       : 0;
 
     if (nextBid > bidderTotalCash) {
@@ -295,10 +519,40 @@ io.on('connection', (socket) => {
     }
 
     room.currentBid = nextBid;
-    room.currentBidder = bidder;
-    addRoomLog(room, `${bidder} bids $${nextBid}`, 'bid');
+    room.highestBidder = socket.id;
+    addRoomLog(room, `${bidderRecord.name} bids $${nextBid}`, 'bid');
+    console.log(`[ROAR] ✦ Room ${roomCode}: "${bidderRecord.name}" bids $${nextBid}`);
+    
+    // Check if the new bid immediately auto-passes everyone else and resolves the auction
+    checkAuctionResolution(room, roomCode);
+  });
 
-    broadcastRoom(roomCode);
+  // ── pass-bid ──────────────────────────────────────────────────────────────
+  socket.on('pass-bid', () => {
+    const roomCode = socket.data.roomCode;
+    const room = roomCode && rooms[roomCode];
+    if (!room) return;
+
+    if (room.status !== 'PLAYING') return;
+    if (room.activePhase !== 'AUCTION') {
+      socket.emit('roar-error', { message: 'No active auction.' });
+      return;
+    }
+    if (socket.id === room.drawerId) {
+      socket.emit('roar-error', { message: 'The seller cannot pass.' });
+      return;
+    }
+    if (room.passedPlayers.includes(socket.id)) return; // already passed, ignore
+
+    const passer = room.players.find((p) => p.id === socket.id);
+    if (!passer) return;
+
+    room.passedPlayers.push(socket.id);
+    addRoomLog(room, `${passer.name} passed.`, 'system');
+    console.log(`[ROAR] ✦ Room ${roomCode}: "${passer.name}" passed.`);
+
+    // Check resolution
+    checkAuctionResolution(room, roomCode);
   });
 
   // ── disconnect ───────────────────────────────────────────────────────────────

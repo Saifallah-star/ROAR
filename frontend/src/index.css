@@ -80,3 +80,9 @@
   .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
   .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(196,30,58,0.4); border-radius: 4px; }
 }
+
+/* ── Marquee keyframe (waiting banner) ───────────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0%); }
+  to   { transform: translateX(-50%); }
+}
