@@ -18,19 +18,19 @@
 
 ---
 
-## 🛠️ Current Project Status: Under Implementation
-> ⚠️ **Note:** This engine is currently in an active development phase (**Stage 3 Stable**). Core mechanics like the turn state machine, table layouts, and initial public auction settlement are completely operational. Advanced secondary trade functions are actively being implemented.
+##  Current Project Status: Under Implementation
+>  **Note:** This engine is currently in an active development phase (**Stage 3 Stable**). Core mechanics like the turn state machine, table layouts, and initial public auction settlement are completely operational. Advanced secondary trade functions are actively being implemented.
 
 ---
 
-## 🎨 Interface & Aesthetic 
+##  Interface & Aesthetic 
 * **The War Table Perspective:** A dark, high-fidelity jungle aesthetic featuring a centralized, fixed-perspective 3D elliptical playing board.
 * **Tactile Visual Layout:** Opponents sit in a radial pattern along the upper rim of the circular table with dynamic visual indicators, while your private hand fanning layout stays neatly grouped at the bottom edge of the screen.
 * **Streamlined Economy Styling:** High-contrast, premium currency cards displaying absolute monetary values ($10, $20, $50) with clean typography—completely decoupled from animal illustrations to avoid mechanical asset confusion.
 
 ---
 
-## 🛠️ Engine Features & Core Architecture
+##  Engine Features & Core Architecture
 
 **ROAR** utilizes a decoupled web topology designed for seamless, fast-paced match sessions:
 
@@ -44,9 +44,8 @@
 
 ---
 
-## 🔄 Core Gameplay Loop Flow
+##  Core Gameplay Loop Flow
 
-```mermaid
 graph TD
     A[Phase: DRAW] -->|draw-card event| B(Free Draw: Card to Drawer Inventory)
     B --> C[Phase: CHOOSE_ACTION]
