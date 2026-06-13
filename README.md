@@ -62,7 +62,7 @@ graph TD
 
 roar-game/
 ├── backend/
-│   ├── server.js              # Express + Socket.io event loop orchestration & settlement logic
+│   ├── server.js              # Express + Socket.io event loop orchestration
 │   └── package.json           # Server environments & dependencies
 └── frontend/
     ├── src/
