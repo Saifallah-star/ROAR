@@ -44,7 +44,7 @@
 
 ---
 
-## 🔄 Core Gameplay Loop Flow
+##  Core Gameplay Loop Flow
 
 ```mermaid
 graph TD
@@ -63,7 +63,7 @@ graph TD
 
     roar-game/
     ├── backend/
-    │   ├── server.js              # Express + Socket.io event loop orchestration & settlement logic
+    │   ├── server.js              # Express + Socket.io event loop orchestration
     │   └── package.json           # Server environments & dependencies
     └── frontend/
         ├── src/
@@ -72,3 +72,4 @@ graph TD
         │   └── main.jsx           # Client application entrypoint
         ├── vite.config.js         # Tooling and dev-proxy network layout
         └── package.json           # React dependencies
+   
