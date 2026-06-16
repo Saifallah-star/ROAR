@@ -104,59 +104,60 @@ function rebuildMoney(total) {
 }
 
 function settleAuctionPayment(winner, seller, amount) {
-  let subset = findExactBillsSubset(winner.money, amount);
-  if (subset) {
-    for (const bill of subset) {
-      const idx = winner.money.indexOf(bill);
-      if (idx !== -1) winner.money.splice(idx, 1);
-      seller.money.push(bill);
-    }
-    return;
-  }
   let bestSum = Infinity;
   let bestSubset = null;
+
+  // Sort winner's bills to optimize search/pruning
+  const sortedBills = [...winner.money].sort((a, b) => b - a);
+
   function backtrack(index, currentSum, currentSubset) {
     if (currentSum >= amount) {
       if (currentSum < bestSum) {
         bestSum = currentSum;
         bestSubset = [...currentSubset];
+      } else if (currentSum === bestSum) {
+        if (bestSubset === null || currentSubset.length < bestSubset.length) {
+          bestSubset = [...currentSubset];
+        }
       }
       return;
     }
-    if (index >= winner.money.length) return;
-    currentSubset.push(winner.money[index]);
-    backtrack(index + 1, currentSum + winner.money[index], currentSubset);
+    if (currentSum >= bestSum) return; // Prune branch if we already exceeded our best sum
+    if (index >= sortedBills.length) return;
+
+    // Include the bill
+    currentSubset.push(sortedBills[index]);
+    backtrack(index + 1, currentSum + sortedBills[index], currentSubset);
     currentSubset.pop();
+
+    // Exclude the bill
     backtrack(index + 1, currentSum, currentSubset);
   }
+
   backtrack(0, 0, []);
+
   if (bestSubset) {
+    // Deduct the chosen bills directly from the buyer's money cards array
+    // transferring those exact assets to the seller's state. No change is returned.
     for (const bill of bestSubset) {
       const idx = winner.money.indexOf(bill);
-      if (idx !== -1) winner.money.splice(idx, 1);
+      if (idx !== -1) {
+        winner.money.splice(idx, 1);
+      }
       seller.money.push(bill);
     }
-    const change = bestSum - amount;
-    if (change > 0) {
-      let changeSubset = findExactBillsSubset(seller.money, change);
-      if (changeSubset) {
-        for (const bill of changeSubset) {
-          const idx = seller.money.indexOf(bill);
-          if (idx !== -1) seller.money.splice(idx, 1);
-          winner.money.push(bill);
-        }
-      } else {
-        const winnerTotal = winner.money.reduce((a, b) => a + b, 0) + change;
-        const sellerTotal = seller.money.reduce((a, b) => a + b, 0) - change;
-        winner.money = rebuildMoney(winnerTotal);
-        seller.money = rebuildMoney(sellerTotal);
-      }
-    }
+    console.log(`[ROAR] Settle payment: Winner paid ${bestSum} (Bid: ${amount}) using subset [${bestSubset}]. Seller received it, no change returned.`);
   } else {
-    const winnerTotal = winner.money.reduce((a, b) => a + b, 0) - amount;
-    const sellerTotal = seller.money.reduce((a, b) => a + b, 0) + amount;
-    winner.money = rebuildMoney(winnerTotal);
-    seller.money = rebuildMoney(sellerTotal);
+    // Fallback: If for some reason no combination meets the bid amount, transfer all remaining cards.
+    const remainingBills = [...winner.money];
+    for (const bill of remainingBills) {
+      const idx = winner.money.indexOf(bill);
+      if (idx !== -1) {
+        winner.money.splice(idx, 1);
+      }
+      seller.money.push(bill);
+    }
+    console.log(`[ROAR] Settle payment fallback: Insufficient bills combination. Transferred all remaining bills [${remainingBills}].`);
   }
 }
 

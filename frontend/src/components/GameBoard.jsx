@@ -279,28 +279,28 @@ const MoneyIllustrations = {
 };
 
 function CardIllustration({ name }) {
-  const Component = AnimalIllustrations[name];
-  if (!Component) return <div className="w-full h-full bg-slate-800" />;
+  const normalized = name ? name.charAt(0).toUpperCase() + name.slice(1).toLowerCase() : '';
+  const Component = AnimalIllustrations[normalized];
+  if (!Component) {
+    return (
+      <img
+        src={`https://source.unsplash.com/400x600/?${name?.toLowerCase() || 'animal'},animal`}
+        alt={name}
+        className="w-full h-full object-cover"
+      />
+    );
+  }
   return <Component />;
 }
 
 // ─── Radial Opponents Seat Matrix (Placed outside the table boundary) ───
-const getOpponentPosition = (seatIndex) => {
-  const coordinates = [
-    { left: '50%', top: '112%' },  // Me — below container
-    { left: '-14%', top: '45%' },  // Left
-    { left: '114%', top: '45%' },  // Right
-    { left: '20%', top: '-28%' },  // Top-left — above container
-    { left: '80%', top: '-28%' },  // Top-right — above container
-  ];
-  return coordinates[seatIndex] || { left: '50%', top: '50%' };
-};
+// Dynamic opponent positioning is used instead of static coordinates.
 
 export default function GameBoard({ room, player, socket, onLeave }) {
   const me = room?.players?.find((p) => p.id === player.id) || player;
   const gameLogs = room?.logs ?? [];
   const currentBid = typeof room?.currentBid === 'number' ? room.currentBid : 0;
-  
+
   const highestBidderPlayer = room?.players?.find((p) => p.id === room.highestBidder);
   const currentBidderName = highestBidderPlayer ? (highestBidderPlayer.id === me.id ? 'YOU' : highestBidderPlayer.name) : '—';
 
@@ -345,6 +345,23 @@ export default function GameBoard({ room, player, socket, onLeave }) {
   const [selectedCardIdx, setSelectedCardIdx] = useState(null);
   const [hoveredCardIdx, setHoveredCardIdx] = useState(null);
   const [showBankroll, setShowBankroll] = useState(false);
+  const [inspectedPlayerId, setInspectedPlayerId] = useState(null);
+  const [expandedAnimalGroup, setExpandedAnimalGroup] = useState(null);
+
+  const handleInspectPlayer = (playerId) => {
+    setInspectedPlayerId(playerId);
+    setExpandedAnimalGroup(null);
+  };
+
+  const inspectedPlayer = room?.players?.find((p) => p.id === inspectedPlayerId);
+
+  // Group inspected player's animals by type for identical stacking logic
+  const inspectedGroupedAnimals = (inspectedPlayer?.animals || []).reduce((acc, animal) => {
+    const type = animal.name || 'UNKNOWN';
+    if (!acc[type]) acc[type] = [];
+    acc[type].push(animal);
+    return acc;
+  }, {});
 
   const handleDrawCard = () => {
     if (isMyTurn && room?.activePhase === 'DRAW') {
@@ -510,21 +527,23 @@ export default function GameBoard({ room, player, socket, onLeave }) {
           {/* 2D BILLBOARD INTERACTION OVERLAY LAYER */}
           <div className="absolute inset-0 w-full h-full z-10 pointer-events-none">
 
-            {/* 1. RADIAL SEATS FOR 5 PLAYERS OUTSIDE TABLE */}
-            {displayPlayers.map((opp, idx) => {
-              const oppPos = getOpponentPosition(idx);
-              const isTurn = activeSeatIdx === idx;
+            {/* 1. RADIAL SEATS FOR OPPONENTS OUTSIDE TABLE */}
+            {displayPlayers.filter(p => !p.isMe).map((opp, idx, opponents) => {
+              const totalOpponents = opponents.length;
+              // Distribute left percentage evenly across the top rim (e.g., from 10% to 90%)
+              const leftPercent = totalOpponents > 1
+                ? 10 + (idx * (80 / (totalOpponents - 1)))
+                : 50;
+              const isTurn = currentTurnPlayer?.id === opp.id;
               const OppAvatar = AVATAR_LIST[opp.avatarIdx % AVATAR_LIST.length];
 
               return (
                 <div
                   key={opp.id}
-                  className="absolute pointer-events-auto"
-                  style={{
-                    left: oppPos.left,
-                    top: oppPos.top,
-                    transform: 'translate(-50%, -50%)',
-                  }}
+                  className="absolute -top-12 transform -translate-x-1/2 pointer-events-auto cursor-pointer hover:scale-105 transition-all duration-200"
+                  style={{ left: `${leftPercent}%` }}
+                  onClick={() => handleInspectPlayer(opp.id)}
+                  title={`Inspect ${opp.name}'s inventory`}
                 >
                   <div className="flex flex-col items-center">
 
@@ -632,7 +651,7 @@ export default function GameBoard({ room, player, socket, onLeave }) {
 
             </div>
 
-                {room?.activePhase === 'CHOOSE_ACTION' && room?.currentRevealedCard && (
+            {room?.activePhase === 'CHOOSE_ACTION' && room?.currentRevealedCard && (
               isMyTurn ? (
                 /* ── ACTIVE PLAYER: Choice buttons ── */
                 <div className="absolute bottom-[-4%] left-1/2 -translate-x-1/2 w-full max-w-sm pointer-events-auto z-30">
@@ -729,11 +748,10 @@ export default function GameBoard({ room, player, socket, onLeave }) {
                         <button
                           onClick={placeBid}
                           disabled={!hasEnoughCashForBid}
-                          className={`font-display font-black text-[9px] px-3 py-1.5 rounded uppercase tracking-wider border shadow transition-all active:scale-95 ${
-                            hasEnoughCashForBid
+                          className={`font-display font-black text-[9px] px-3 py-1.5 rounded uppercase tracking-wider border shadow transition-all active:scale-95 ${hasEnoughCashForBid
                               ? 'bg-gradient-to-r from-[#d4a017] to-[#fef08a] hover:from-[#eab308] hover:to-[#fef08a] text-black border-yellow-200/50'
                               : 'bg-white/5 border-white/10 text-roar-muted cursor-not-allowed opacity-50'
-                          }`}
+                            }`}
                           title={!hasEnoughCashForBid ? 'Insufficient cash to bid' : `Bid $${nextBidAmount}`}
                         >
                           BID +$10
@@ -776,7 +794,16 @@ export default function GameBoard({ room, player, socket, onLeave }) {
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => handleInspectPlayer(inspectedPlayerId === me.id ? null : me.id)}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded border text-[9px] font-black uppercase tracking-wider transition-all duration-300 ${inspectedPlayerId === me.id
+                  ? 'bg-[#d4a017]/20 border-roar-gold text-roar-gold shadow-[0_0_15px_rgba(212,160,23,0.3)]'
+                  : 'bg-black/80 border-roar-gold/50 text-roar-gold/80 hover:bg-[#d4a017]/10 hover:border-roar-gold hover:text-roar-gold'
+                }`}
+            >
+              🐾 Show Animals
+            </button>
             <span className="text-[8px] text-roar-gold font-bold bg-roar-gold/10 border border-roar-gold/20 px-2 py-0.5 rounded uppercase tracking-wider">
               70-80% VISIBILITY WIDE FAN
             </span>
@@ -893,6 +920,113 @@ export default function GameBoard({ room, player, socket, onLeave }) {
         )}
       </div>
 
+      {/* ── INVENTORY VIEWER TRAY (Smooth sliding overlay) ── */}
+      {inspectedPlayer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in pointer-events-auto">
+          <div className="relative w-[90%] max-w-4xl h-[70vh] bg-[#050813]/95 border border-roar-gold/30 rounded-2xl shadow-2xl flex flex-col p-6 animate-scale-in">
+            {/* Close Button & Header */}
+            <div className="flex justify-between items-center border-b border-white/10 pb-4 mb-6">
+              <div>
+                <h2 className="text-xl font-display font-black text-roar-gold uppercase tracking-widest flex items-center gap-3">
+                  {inspectedPlayer.id === me.id ? (
+                    <>🐾 Your Animal Inventory</>
+                  ) : (
+                    <>🐾 {inspectedPlayer.name}'s Animal Inventory</>
+                  )}
+                  <span className="text-xs bg-roar-gold/10 text-roar-gold px-2 py-1 rounded-full border border-roar-gold/20">
+                    {inspectedPlayer.animals?.length || 0} TOTAL
+                  </span>
+                </h2>
+                <p className="text-xs text-roar-muted mt-1">
+                  {inspectedPlayer.id === me.id
+                    ? 'Manage and inspect your collected animal sets.'
+                    : `Inspecting ${inspectedPlayer.name}'s collected animal sets.`}
+                </p>
+              </div>
+              <button
+                onClick={() => setInspectedPlayerId(null)}
+                className="text-roar-muted hover:text-white bg-white/5 hover:bg-white/10 w-10 h-10 rounded-full flex items-center justify-center transition-all"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Inventory Grid */}
+            <div className="flex-1 overflow-y-auto">
+              {/* CRITICAL PRIVACY MIDDLEWARE check: Ensure that during opponent inspection,
+                  no monetary figures, individual bankroll values, or private money card breakdowns 
+                  from the UI template leak or are displayed. */}
+              {inspectedPlayer.id !== me.id && (
+                <div className="sr-only" data-privacy-middleware="active">
+                  Opponent financial assets and money breakdowns are strictly hidden.
+                </div>
+              )}
+
+              {Object.keys(inspectedGroupedAnimals).length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8 pb-10 mt-4">
+                  {Object.entries(inspectedGroupedAnimals).map(([type, animals]) => {
+                    const isExpanded = expandedAnimalGroup === type;
+                    return (
+                      <div
+                        key={type}
+                        className="relative flex flex-col items-center"
+                      >
+                        {/* Title & Count */}
+                        <div className="mb-4 text-center z-20">
+                          <span className="block text-sm font-black text-roar-text uppercase tracking-wider">{type}</span>
+                          <span className="text-[10px] text-emerald-400 font-bold px-2 py-0.5 bg-emerald-900/30 rounded-full border border-emerald-500/30">
+                            {animals.length} COPIES
+                          </span>
+                        </div>
+
+                        {/* Stacking / Fanning Container */}
+                        <div
+                          className={`relative w-32 h-48 cursor-pointer transition-all duration-300 ${isExpanded ? 'w-full h-56' : ''}`}
+                          onClick={() => setExpandedAnimalGroup(isExpanded ? null : type)}
+                        >
+                          {animals.map((animal, idx) => {
+                            // Calculate offset
+                            const xOffset = isExpanded ? (idx - (animals.length - 1) / 2) * 60 : idx * 12;
+                            const yOffset = isExpanded ? 0 : idx * 12;
+                            const rot = isExpanded ? (idx - (animals.length - 1) / 2) * 5 : 0;
+                            const zIndex = 20 - idx;
+
+                            return (
+                              <div
+                                key={animal.id || `${type}-${idx}`}
+                                className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-48 bg-gradient-to-br from-[#1b1b2d] to-[#0a0a14] border-2 border-[#d4a017]/80 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex flex-col p-2 transition-all duration-500 hover:border-white"
+                                style={{
+                                  transform: `translate(calc(-50% + ${xOffset}px), ${yOffset}px) rotate(${rot}deg)`,
+                                  zIndex,
+                                }}
+                              >
+                                <div className="w-full flex justify-between items-center border-b border-roar-border/40 pb-1 mb-1">
+                                  <span className="text-[10px] text-roar-gold font-black uppercase tracking-wider truncate">
+                                    {type}
+                                  </span>
+                                  <span className="text-[9px] text-[#22c55e] font-black">{animal.vp || 10} VP</span>
+                                </div>
+                                <div className="flex-1 rounded bg-black/60 overflow-hidden relative border border-white/5 flex items-center justify-center">
+                                  <CardIllustration name={type} />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-roar-muted opacity-50">
+                  <span className="text-4xl mb-3">🕸️</span>
+                  <p className="text-sm font-bold uppercase tracking-widest">No animals in inventory yet</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
