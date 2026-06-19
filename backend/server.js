@@ -159,6 +159,10 @@ function settleAuctionPayment(winner, seller, amount) {
     }
     console.log(`[ROAR] Settle payment fallback: Insufficient bills combination. Transferred all remaining bills [${remainingBills}].`);
   }
+
+  // Update total bankroll calculations by reducing the values to the sum of physical cash arrays
+  winner.moneyTotal = winner.money.reduce((sum, val) => sum + val, 0);
+  seller.moneyTotal = seller.money.reduce((sum, val) => sum + val, 0);
 }
 
 
@@ -194,9 +198,11 @@ function checkAuctionResolution(room, roomCode) {
       const salePrice = room.currentBid;
 
       if (winner && seller && card) {
+        // Transfer ownership of the auction animal asset by popping it out of the seller's hand
         seller.animals = seller.animals.filter((a) => a.id !== card.id);
         seller.vp = Math.max(0, (seller.vp || 0) - card.vp);
 
+        // Push it into the buyer's (winner's) animals collection
         if (!Array.isArray(winner.animals)) winner.animals = [];
         winner.animals.push(card);
         winner.vp = (winner.vp || 0) + card.vp;
@@ -211,7 +217,7 @@ function checkAuctionResolution(room, roomCode) {
 
     room.currentRevealedCard = null;
     room.drawerId = null;
-    room.activePhase = 'DRAW';
+    room.activePhase = 'CHOOSE_ACTION'; // Transition back to CHOOSE_ACTION
     room.currentBid = 0;
     room.highestBidder = null;
     room.passedPlayers = [];
@@ -261,7 +267,9 @@ function broadcastRoom(roomCode) {
   const room = rooms[roomCode];
   if (!room) return;
   room.players.forEach((player) => {
-    io.to(player.id).emit('room-updated', { room: getScrubbedRoom(room, player.id) });
+    const scrubbed = getScrubbedRoom(room, player.id);
+    io.to(player.id).emit('room-updated', { room: scrubbed });
+    io.to(player.id).emit('game-state-updated', { room: scrubbed });
   });
 }
 
@@ -400,7 +408,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    if (room.activePhase !== 'DRAW') {
+    if (room.activePhase !== 'DRAW' && !(room.activePhase === 'CHOOSE_ACTION' && !room.currentRevealedCard)) {
       socket.emit('roar-error', { message: 'Drawing is only allowed in the DRAW phase.' });
       return;
     }

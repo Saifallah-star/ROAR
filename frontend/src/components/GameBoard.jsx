@@ -347,6 +347,17 @@ export default function GameBoard({ room, player, socket, onLeave }) {
   const [showBankroll, setShowBankroll] = useState(false);
   const [inspectedPlayerId, setInspectedPlayerId] = useState(null);
   const [expandedAnimalGroup, setExpandedAnimalGroup] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(15);
+
+  useEffect(() => {
+    if (room?.activePhase === 'AUCTION') {
+      setTimeLeft(15);
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [room?.currentBid, room?.highestBidder, room?.activePhase]);
 
   const handleInspectPlayer = (playerId) => {
     setInspectedPlayerId(playerId);
@@ -364,7 +375,7 @@ export default function GameBoard({ room, player, socket, onLeave }) {
   }, {});
 
   const handleDrawCard = () => {
-    if (isMyTurn && room?.activePhase === 'DRAW') {
+    if (isMyTurn && (room?.activePhase === 'DRAW' || (room?.activePhase === 'CHOOSE_ACTION' && !room?.currentRevealedCard))) {
       socket.emit('draw-card');
     }
   };
@@ -615,7 +626,7 @@ export default function GameBoard({ room, player, socket, onLeave }) {
                 </div>
 
                 {/* PULSING ACTIVE USER DRAW OVERLAY BUTTON */}
-                {room?.activePhase === 'DRAW' && isMyTurn && (
+                {(room?.activePhase === 'DRAW' || (room?.activePhase === 'CHOOSE_ACTION' && !room?.currentRevealedCard)) && isMyTurn && (
                   <button
                     id="draw-animal-btn"
                     onClick={handleDrawCard}
@@ -716,53 +727,104 @@ export default function GameBoard({ room, player, socket, onLeave }) {
               )
             )}
 
-            {/* 4. ELEGANT FLOATING AUCTION PANEL — only during AUCTION phase */}
+            {/* 4. HIGH-END ACTIVE BIDDING CONTROL PANEL — only during AUCTION phase */}
             {room?.activePhase === 'AUCTION' && room?.currentRevealedCard && (
-              <div className="absolute bottom-[2%] left-1/2 -translate-x-1/2 w-full max-w-md pointer-events-auto bg-[#040815]/95 border border-[#d4a017]/50 px-4 py-3 rounded-lg text-center shadow-[0_0_20px_rgba(0,0,0,0.8)] z-25 flex flex-col gap-2.5 backdrop-blur">
-                <div className="flex items-center justify-between">
-                  <div className="text-left">
-                    <span className="text-[8px] text-roar-muted uppercase font-black tracking-widest block">CURRENT BID</span>
-                    <span className="text-xl font-display font-black text-[#22c55e] text-glow-green">${currentBid}</span>
+              <div className="absolute bottom-[4%] left-1/2 -translate-x-1/2 w-full max-w-lg pointer-events-auto bg-[#050815]/80 backdrop-blur-xl border border-roar-gold/30 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] z-25 p-4 flex flex-col gap-3">
+                {/* Subtle Gold / Neon Top Accent Border */}
+                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-roar-gold/80 to-transparent shadow-[0_0_10px_#d4a017]" />
+
+                {/* Horizontal Countdown Timer Bar */}
+                <div className="w-full h-1.5 bg-black/60 rounded-full overflow-hidden relative">
+                  <div
+                    className="h-full bg-gradient-to-r from-roar-gold to-roar-crimson transition-all duration-1000 ease-linear shadow-[0_0_8px_rgba(212,160,23,0.5)]"
+                    style={{ width: `${(timeLeft / 15) * 100}%` }}
+                  />
+                </div>
+
+                {/* Bidding Panel Body - Grid/Flex Layout for Zero Flat Stacks */}
+                <div className="flex items-center justify-between gap-4">
+                  {/* Bid Info Block (Flex Row for label and value) */}
+                  <div className="flex flex-col gap-1 text-left">
+                    <span className="text-[9px] text-roar-muted uppercase font-black tracking-widest">
+                      CURRENT BID
+                    </span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-display font-black text-[#22c55e] text-glow-green">
+                        ${currentBid}
+                      </span>
+                      <span className="text-[10px] text-roar-muted">USD</span>
+                    </div>
                   </div>
 
-                  <div className="bg-white/5 h-8 w-px" />
+                  {/* Vertical Divider */}
+                  <div className="bg-white/10 h-10 w-[1px]" />
 
-                  <div className="text-left">
-                    <span className="text-[8px] text-roar-muted uppercase font-black tracking-widest block">HIGHEST BIDDER</span>
-                    <span className="text-xs font-black text-roar-gold uppercase tracking-wider">{currentBidderName}</span>
+                  {/* Highest Bidder Info Block */}
+                  <div className="flex flex-col gap-1 text-left min-w-[120px]">
+                    <span className="text-[9px] text-roar-muted uppercase font-black tracking-widest">
+                      HIGHEST BIDDER
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {room?.highestBidder ? (
+                        <>
+                          <div className="w-4 h-4 rounded-full bg-roar-gold/20 flex items-center justify-center border border-roar-gold/40">
+                            <span className="text-[8px] text-roar-gold font-bold">👑</span>
+                          </div>
+                          <span className="text-xs font-black text-roar-gold uppercase tracking-wider truncate max-w-[90px]">
+                            {currentBidderName}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-xs font-bold text-roar-muted uppercase tracking-wider">
+                          No bids yet
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="bg-white/5 h-8 w-px" />
+                  {/* Vertical Divider */}
+                  <div className="bg-white/10 h-10 w-[1px]" />
 
-                  <div className="flex items-center gap-2">
+                  {/* Interaction Controls */}
+                  <div className="flex items-center justify-end flex-1">
                     {isDrawer ? (
-                      <span className="text-[9px] font-black uppercase tracking-wider text-roar-gold/60 border border-roar-gold/20 bg-roar-gold/5 px-2.5 py-1 rounded">
-                        Selling your card...
-                      </span>
+                      /* Elegant static banner status readout for Seller */
+                      <div className="flex items-center gap-2 px-3 py-2 bg-roar-gold/10 border border-roar-gold/30 rounded-lg text-roar-gold shadow-[inset_0_0_8px_rgba(212,160,23,0.15)] animate-pulse">
+                        <span className="w-1.5 h-1.5 rounded-full bg-roar-gold" />
+                        <span className="text-[10px] font-black uppercase tracking-wider whitespace-nowrap">
+                          Your card is currently on the auction block. Waiting for bids...
+                        </span>
+                      </div>
                     ) : hasPassed ? (
-                      <span className="text-[9px] font-black uppercase tracking-wider text-roar-crimson/80 border border-roar-crimson/20 bg-roar-crimson/5 px-2.5 py-1 rounded">
-                        PASSED
-                      </span>
+                      /* Passed Banner for player who passed */
+                      <div className="flex items-center gap-2 px-3 py-2 bg-roar-crimson/10 border border-roar-crimson/30 rounded-lg text-roar-crimson shadow-[inset_0_0_8px_rgba(196,30,58,0.15)]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-roar-crimson animate-ping" />
+                        <span className="text-[10px] font-black uppercase tracking-widest">
+                          Passed
+                        </span>
+                      </div>
                     ) : (
-                      <>
+                      /* Active Bidder Buttons */
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={placeBid}
                           disabled={!hasEnoughCashForBid}
-                          className={`font-display font-black text-[9px] px-3 py-1.5 rounded uppercase tracking-wider border shadow transition-all active:scale-95 ${hasEnoughCashForBid
-                              ? 'bg-gradient-to-r from-[#d4a017] to-[#fef08a] hover:from-[#eab308] hover:to-[#fef08a] text-black border-yellow-200/50'
+                          className={`font-display font-black text-[10px] px-4 py-2.5 rounded-lg uppercase tracking-wider border shadow transition-all duration-200 active:scale-95 ${
+                            hasEnoughCashForBid
+                              ? 'bg-gradient-to-r from-roar-gold to-roar-gold-light hover:from-[#eab308] hover:to-[#fef08a] text-black border-yellow-200/50 shadow-glow-gold hover:shadow-[0_0_20px_rgba(212,160,23,0.6)] cursor-pointer'
                               : 'bg-white/5 border-white/10 text-roar-muted cursor-not-allowed opacity-50'
-                            }`}
+                          }`}
                           title={!hasEnoughCashForBid ? 'Insufficient cash to bid' : `Bid $${nextBidAmount}`}
                         >
-                          BID +$10
+                          +$10 Bid
                         </button>
                         <button
                           onClick={passBid}
-                          className="bg-roar-crimson/20 hover:bg-roar-crimson/40 text-roar-crimson border border-roar-crimson/40 font-display font-black text-[9px] px-3 py-1.5 rounded uppercase tracking-wider shadow transition-all active:scale-95"
+                          className="bg-roar-crimson/20 hover:bg-roar-crimson/40 text-roar-crimson border border-roar-crimson/40 font-display font-black text-[10px] px-4 py-2.5 rounded-lg uppercase tracking-wider shadow hover:shadow-glow-crimson transition-all duration-200 active:scale-95 cursor-pointer"
                         >
-                          PASS
+                          Pass
                         </button>
-                      </>
+                      </div>
                     )}
                   </div>
                 </div>

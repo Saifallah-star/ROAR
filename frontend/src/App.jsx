@@ -42,6 +42,7 @@ export default function App() {
       'room-created': ({ player: p, room: r }) => { clearLoadingTimer(); setPlayer(p); setRoom(r); setView('lobby'); setIsLoading(false); },
       'room-joined': ({ player: p, room: r }) => { clearLoadingTimer(); setPlayer(p); setRoom(r); setView('lobby'); setIsLoading(false); },
       'room-updated': ({ room: r }) => setRoom(r),
+      'game-state-updated': ({ room: r }) => setRoom(r),
       'game-started': ({ room: r }) => { setRoom(r); setView('game'); },
       'roar-error': ({ message }) => { clearLoadingTimer(); setError(message); setIsLoading(false); },
     };
