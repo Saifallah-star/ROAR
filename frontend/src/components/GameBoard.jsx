@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import PremiumCard from './PremiumCard';
 
 // Ornate card border decoration
 const Decors = {
   CardBorder: () => (
-    <rect x="2" y="2" width="20" height="32" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
+    <rect x="2" y="2" width="15" height="20" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
   )
 };
 
@@ -642,21 +643,12 @@ export default function GameBoard({ room, player, socket, onLeave }) {
               {/* REVEAL ZONE: empty until a valid draw populates room.currentRevealedCard */}
               <div className="relative w-22 h-32 flex-shrink-0 flex items-center justify-center">
                 {room?.currentRevealedCard ? (
-                  <div className="w-20 h-30 bg-gradient-to-b from-[#1b1b2d] to-[#0a0a14] border-2 border-[#d4a017] rounded-lg shadow-[0_0_20px_rgba(212,160,23,0.6)] z-20 flex flex-col justify-between p-2 animate-scale-in">
-                    <div className="w-full flex justify-between items-center border-b border-roar-border/40 pb-0.5">
-                      <span className="text-[8px] text-roar-gold font-black uppercase tracking-wider truncate max-w-[42px]">
-                        {room.currentRevealedCard.name}
-                      </span>
-                      <span className="text-[8.5px] text-[#22c55e] font-black">ACTIVE</span>
-                    </div>
-
-                    <div className="w-full h-14 rounded bg-black/40 overflow-hidden relative border border-white/5" />
-
-                    <div className="w-full text-center pt-0.5 border-t border-roar-border/40 flex justify-between items-center text-[7.5px] text-roar-gold font-black uppercase">
-                      <span>ANIMAL</span>
-                      <span className="text-glow-gold">{room.currentRevealedCard.vp} VP</span>
-                    </div>
-                  </div>
+                  <PremiumCard
+                    name={room.currentRevealedCard.name}
+                    vp={room.currentRevealedCard.vp}
+                    className="w-22 shadow-[0_0_25px_rgba(212,160,23,0.5)] z-20 animate-scale-in"
+                    isHoverable={true}
+                  />
                 ) : null}
               </div>
 
@@ -809,11 +801,10 @@ export default function GameBoard({ room, player, socket, onLeave }) {
                         <button
                           onClick={placeBid}
                           disabled={!hasEnoughCashForBid}
-                          className={`font-display font-black text-[10px] px-4 py-2.5 rounded-lg uppercase tracking-wider border shadow transition-all duration-200 active:scale-95 ${
-                            hasEnoughCashForBid
+                          className={`font-display font-black text-[10px] px-4 py-2.5 rounded-lg uppercase tracking-wider border shadow transition-all duration-200 active:scale-95 ${hasEnoughCashForBid
                               ? 'bg-gradient-to-r from-roar-gold to-roar-gold-light hover:from-[#eab308] hover:to-[#fef08a] text-black border-yellow-200/50 shadow-glow-gold hover:shadow-[0_0_20px_rgba(212,160,23,0.6)] cursor-pointer'
                               : 'bg-white/5 border-white/10 text-roar-muted cursor-not-allowed opacity-50'
-                          }`}
+                            }`}
                           title={!hasEnoughCashForBid ? 'Insufficient cash to bid' : `Bid $${nextBidAmount}`}
                         >
                           +$10 Bid
@@ -860,8 +851,8 @@ export default function GameBoard({ room, player, socket, onLeave }) {
             <button
               onClick={() => handleInspectPlayer(inspectedPlayerId === me.id ? null : me.id)}
               className={`flex items-center gap-1.5 px-3 py-1 rounded border text-[9px] font-black uppercase tracking-wider transition-all duration-300 ${inspectedPlayerId === me.id
-                  ? 'bg-[#d4a017]/20 border-roar-gold text-roar-gold shadow-[0_0_15px_rgba(212,160,23,0.3)]'
-                  : 'bg-black/80 border-roar-gold/50 text-roar-gold/80 hover:bg-[#d4a017]/10 hover:border-roar-gold hover:text-roar-gold'
+                ? 'bg-[#d4a017]/20 border-roar-gold text-roar-gold shadow-[0_0_15px_rgba(212,160,23,0.3)]'
+                : 'bg-black/80 border-roar-gold/50 text-roar-gold/80 hover:bg-[#d4a017]/10 hover:border-roar-gold hover:text-roar-gold'
                 }`}
             >
               🐾 Show Animals
@@ -1056,21 +1047,18 @@ export default function GameBoard({ room, player, socket, onLeave }) {
                             return (
                               <div
                                 key={animal.id || `${type}-${idx}`}
-                                className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-48 bg-gradient-to-br from-[#1b1b2d] to-[#0a0a14] border-2 border-[#d4a017]/80 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex flex-col p-2 transition-all duration-500 hover:border-white"
+                                className="absolute top-0 left-1/2 -translate-x-1/2 w-32 transition-all duration-500 hover:z-50 hover:scale-105"
                                 style={{
                                   transform: `translate(calc(-50% + ${xOffset}px), ${yOffset}px) rotate(${rot}deg)`,
                                   zIndex,
                                 }}
                               >
-                                <div className="w-full flex justify-between items-center border-b border-roar-border/40 pb-1 mb-1">
-                                  <span className="text-[10px] text-roar-gold font-black uppercase tracking-wider truncate">
-                                    {type}
-                                  </span>
-                                  <span className="text-[9px] text-[#22c55e] font-black">{animal.vp || 10} VP</span>
-                                </div>
-                                <div className="flex-1 rounded bg-black/60 overflow-hidden relative border border-white/5 flex items-center justify-center">
-                                  <CardIllustration name={type} />
-                                </div>
+                                <PremiumCard
+                                  name={type}
+                                  vp={animal.vp || 10}
+                                  className="w-full"
+                                  isHoverable={true}
+                                />
                               </div>
                             );
                           })}

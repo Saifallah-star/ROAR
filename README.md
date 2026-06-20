@@ -30,6 +30,18 @@
 
 ---
 
+## Card Artwork Themes
+
+      | Animal | Rarity | Scene |
+      | :--- | :--- | :--- |
+      | 🦁 **Lion** | LEGENDARY ⭐⭐⭐⭐⭐ | Savannah sunset, golden backlit mane, Pride Rock |
+      | 🐯 **Tiger** | EPIC ⭐⭐⭐⭐⭐ | Dense jungle, orange energy vortex, lunging paws |
+      | 🐆 **Jaguar** | RARE ⭐⭐⭐⭐ | Midnight rainforest, glowing green predator eyes, mist |
+      | 🦍 **Gorilla** | RARE ⭐⭐⭐⭐ | Ancient ruins, stone pillars, atmospheric fog |
+      | 🐊 **Crocodile** | UNCOMMON ⭐⭐⭐ | Emerald swamp, ripple water, splash effects |
+      | 🦅 **Falcon** | UNCOMMON ⭐⭐⭐ | Mountain sunrise, golden rays, snow-capped peaks |
+      | 🐍 **Cobra** | COMMON ⭐⭐ | Desert temple, red venom glow, intimidating hood flare |
+
 ##  Engine Features & Core Architecture
 
 **ROAR** utilizes a decoupled web topology designed for seamless, fast-paced match sessions:
@@ -47,14 +59,14 @@
 ##  Core Gameplay Loop Flow
 
 graph TD
-    A[Phase: DRAW] -->|draw-card event| B(Free Draw: Card to Drawer Inventory)
-    B --> C[Phase: CHOOSE_ACTION]
-    C -->|chooseAction: keep-card| D[Keep Card: Turn Advances]
-    C -->|chooseAction: initiate-trade| E[Phase: AUCTION]
-    E -->|place-bid / pass-bid| F{Auction Resolves?}
-    F -->|No| E
-    F -->|Yes| G[Financial Settlement: Winner Pays Seller]
-    G --> H[Advance Turn & Reset to DRAW]
+      A[Phase: DRAW] -->|draw-card event| B(Free Draw: Card to Drawer Inventory)
+      B --> C[Phase: CHOOSE_ACTION]
+      C -->|chooseAction: keep-card| D[Keep Card: Turn Advances]
+      C -->|chooseAction: initiate-trade| E[Phase: AUCTION]
+      E -->|place-bid / pass-bid| F{Auction Resolves?}
+      F -->|No| E
+      F -->|Yes| G[Financial Settlement: Winner Pays Seller]
+      G --> H[Advance Turn & Reset to DRAW]
 
 
 ## Repository Structure

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ROAR — Premium Card Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{
+      background:#04050f;
+      color:#f0ece0;
+      font-family:'Inter',sans-serif;
+      min-height:100vh;
+      padding:40px 24px 80px;
+      background-image:
+        radial-gradient(ellipse 60% 50% at 20% 20%,rgba(196,30,58,.12) 0,transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%,rgba(212,160,23,.08) 0,transparent 60%);
+    }
+    h1{
+      font-family:'Cinzel',serif;
+      font-weight:900;
+      font-size:clamp(1.5rem,4vw,3rem);
+      text-align:center;
+      letter-spacing:.25em;
+      background:linear-gradient(to bottom,#fef08a,#d4a017);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:8px;
+      text-shadow:none;
+    }
+    .subtitle{
+      text-align:center;
+      font-size:.7rem;
+      letter-spacing:.35em;
+      text-transform:uppercase;
+      color:#6b6b8a;
+      margin-bottom:48px;
+    }
+    .grid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:32px;
+      justify-content:center;
+      align-items:flex-start;
+    }
+    /* ── Card outer shell ── */
+    .card-wrap{
+      width:160px;
+      aspect-ratio:2.5/3.6;
+      flex-shrink:0;
+      transition:transform .3s ease,box-shadow .3s ease;
+      cursor:pointer;
+      perspective:1000px;
+    }
+    .card-wrap:hover{
+      transform:translateY(-12px) scale(1.06);
+    }
+    /* ── Frame ── */
+    .frame{
+      width:100%;height:100%;
+      border-radius:14px;
+      padding:3px;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow:hidden;
+    }
+    .frame::before{
+      content:'';
+      position:absolute;inset:0;
+      background:radial-gradient(ellipse at top,rgba(255,255,255,.18) 0,transparent 60%);
+      pointer-events:none;z-index:1;border-radius:inherit;
+    }
+    .frame::after{
+      content:'';
+      position:absolute;inset:0;
+      background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.12));
+      pointer-events:none;z-index:1;border-radius:inherit;
+    }
+    /* Frame color per animal */
+    .frame-lion   {background:linear-gradient(to bottom,#f59e0b,#b45309,#451a03);box-shadow:0 0 30px rgba(245,158,11,.4),0 16px 40px rgba(0,0,0,.9);}
+    .frame-tiger  {background:linear-gradient(to bottom,#f97316,#b91c1c,#7c2d12);box-shadow:0 0 30px rgba(249,115,22,.4),0 16px 40px rgba(0,0,0,.9);}
+    .frame-jaguar {background:linear-gradient(to bottom,#34d399,#047857,#064e3b);box-shadow:0 0 30px rgba(16,185,129,.4),0 16px 40px rgba(0,0,0,.9);}
+    .frame-gorilla{background:linear-gradient(to bottom,#94a3b8,#475569,#0f172a);box-shadow:0 0 30px rgba(148,163,184,.3),0 16px 40px rgba(0,0,0,.9);}
+    .frame-croc   {background:linear-gradient(to bottom,#22c55e,#15803d,#14532d);box-shadow:0 0 30px rgba(34,197,94,.3),0 16px 40px rgba(0,0,0,.9);}
+    .frame-falcon {background:linear-gradient(to bottom,#38bdf8,#f59e0b,#0ea5e9);box-shadow:0 0 30px rgba(56,189,248,.35),0 16px 40px rgba(0,0,0,.9);}
+    .frame-cobra  {background:linear-gradient(to bottom,#fb7185,#be123c,#500724);box-shadow:0 0 30px rgba(251,113,133,.35),0 16px 40px rgba(0,0,0,.9);}
+
+    /* Corner filigree brackets */
+    .corner{position:absolute;width:10px;height:10px;pointer-events:none;z-index:2;}
+    .corner-tl{top:5px;left:5px;border-top:1.5px solid rgba(255,255,255,.3);border-left:1.5px solid rgba(255,255,255,.3);}
+    .corner-tr{top:5px;right:5px;border-top:1.5px solid rgba(255,255,255,.3);border-right:1.5px solid rgba(255,255,255,.3);}
+    .corner-bl{bottom:5px;left:5px;border-bottom:1.5px solid rgba(255,255,255,.3);border-left:1.5px solid rgba(255,255,255,.3);}
+    .corner-br{bottom:5px;right:5px;border-bottom:1.5px solid rgba(255,255,255,.3);border-right:1.5px solid rgba(255,255,255,.3);}
+
+    .card-inner{
+      width:100%;height:100%;
+      border-radius:11px;
+      overflow:hidden;
+      display:flex;flex-direction:column;
+      background:#060810;
+      position:relative;z-index:0;
+    }
+    /* ── Header ── */
+    .card-header{
+      padding:6px 10px;
+      display:flex;align-items:center;justify-content:space-between;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      position:relative;z-index:2;
+      flex-shrink:0;
+    }
+    .card-header::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:rgba(255,255,255,.2);}
+    .header-lion   {background:linear-gradient(to right,rgba(120,53,15,.9),rgba(101,44,14,.9));}
+    .header-tiger  {background:linear-gradient(to right,rgba(124,45,18,.9),rgba(127,29,29,.9));}
+    .header-jaguar {background:linear-gradient(to right,rgba(6,78,59,.9),rgba(19,78,74,.9));}
+    .header-gorilla{background:linear-gradient(to right,rgba(15,23,42,.9),rgba(28,25,23,.9));}
+    .header-croc   {background:linear-gradient(to right,rgba(20,83,45,.9),rgba(6,78,59,.9));}
+    .header-falcon {background:linear-gradient(to right,rgba(8,47,73,.9),rgba(30,27,75,.9));}
+    .header-cobra  {background:linear-gradient(to right,rgba(76,5,25,.9),rgba(127,29,29,.9));}
+    .stars{display:flex;gap:2px;align-items:center;}
+    .star{width:9px;height:9px;}
+    .name{font-family:'Cinzel',serif;font-weight:900;font-size:.52rem;letter-spacing:.2em;color:#fff;text-transform:uppercase;}
+    .rarity{font-size:.38rem;font-weight:900;letter-spacing:.2em;text-transform:uppercase;padding:1px 5px;background:rgba(0,0,0,.6);border-radius:3px;border:1px solid rgba(255,255,255,.1);}
+    .rarity-lion   {color:#f59e0b;}
+    .rarity-tiger  {color:#f97316;}
+    .rarity-jaguar {color:#34d399;}
+    .rarity-gorilla{color:#94a3b8;}
+    .rarity-croc   {color:#22c55e;}
+    .rarity-falcon {color:#38bdf8;}
+    .rarity-cobra  {color:#fb7185;}
+    .star-lion   {fill:#f59e0b;filter:drop-shadow(0 0 2px #f59e0b);}
+    .star-tiger  {fill:#f97316;filter:drop-shadow(0 0 2px #f97316);}
+    .star-jaguar {fill:#34d399;filter:drop-shadow(0 0 2px #34d399);}
+    .star-gorilla{fill:#94a3b8;filter:drop-shadow(0 0 2px #94a3b8);}
+    .star-croc   {fill:#22c55e;filter:drop-shadow(0 0 2px #22c55e);}
+    .star-falcon {fill:#38bdf8;filter:drop-shadow(0 0 2px #38bdf8);}
+    .star-cobra  {fill:#fb7185;filter:drop-shadow(0 0 2px #fb7185);}
+    /* ── Art area ── */
+    .card-art{flex:1;position:relative;overflow:hidden;}
+    .card-art svg{width:100%;height:100%;}
+    .art-vignette{position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(to top,rgba(0,0,0,.85),transparent);pointer-events:none;z-index:1;}
+    /* ── Footer ── */
+    .card-footer{
+      padding:7px 10px;
+      display:flex;align-items:center;gap:8px;
+      border-top:1px solid rgba(255,255,255,.06);
+      position:relative;flex-shrink:0;
+    }
+    .footer-lion   {background:linear-gradient(to top,#1a0f05,#291708,#120a03);}
+    .footer-tiger  {background:linear-gradient(to top,#1f0d05,#331508,#140803);}
+    .footer-jaguar {background:linear-gradient(to top,#04140f,#092b20,#020b08);}
+    .footer-gorilla{background:linear-gradient(to top,#111827,#1f2937,#030712);}
+    .footer-croc   {background:linear-gradient(to top,#051405,#0b290b,#020802);}
+    .footer-falcon {background:linear-gradient(to top,#09152b,#13284f,#030a17);}
+    .footer-cobra  {background:linear-gradient(to top,#14040a,#290916,#080205);}
+    .vp-badge{
+      width:38px;height:38px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      flex-direction:column;
+      position:relative;flex-shrink:0;
+      border:2px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.75);
+    }
+    .vp-num{font-family:'Cinzel',serif;font-weight:900;font-size:.55rem;color:#fff;line-height:1;}
+    .vp-label{font-size:.32rem;font-weight:900;color:rgba(255,255,255,.4);letter-spacing:.15em;text-transform:uppercase;}
+    .vp-lion   {box-shadow:0 0 12px rgba(245,158,11,.5);}
+    .vp-tiger  {box-shadow:0 0 12px rgba(249,115,22,.5);}
+    .vp-jaguar {box-shadow:0 0 12px rgba(16,185,129,.5);}
+    .vp-gorilla{box-shadow:0 0 12px rgba(148,163,184,.4);}
+    .vp-croc   {box-shadow:0 0 12px rgba(16,185,129,.4);}
+    .vp-falcon {box-shadow:0 0 12px rgba(56,189,248,.4);}
+    .vp-cobra  {box-shadow:0 0 12px rgba(225,29,72,.4);}
+    .footer-text{flex:1;text-align:right;}
+    .footer-action{font-size:.42rem;font-weight:900;text-transform:uppercase;letter-spacing:.15em;}
+    .footer-desc{font-size:.35rem;color:rgba(255,255,255,.3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:1px;}
+    .ft-lion   {color:#f59e0b;}
+    .ft-tiger  {color:#f97316;}
+    .ft-jaguar {color:#34d399;}
+    .ft-gorilla{color:#94a3b8;}
+    .ft-croc   {color:#22c55e;}
+    .ft-falcon {color:#38bdf8;}
+    .ft-cobra  {color:#fb7185;}
+
+    /* shimmer animation */
+    @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+    .shimmer{
+      position:absolute;inset:0;
+      background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.12) 50%,transparent 60%);
+      background-size:200% 100%;
+      animation:shimmer 4s linear infinite;
+      pointer-events:none;z-index:3;border-radius:inherit;
+    }
+  </style>
+</head>
+<body>
+<h1>ROAR</h1>
+<p class="subtitle">Collectible Premium Card Gallery · All 7 Animals</p>
+
+<div class="grid" id="cards"></div>
+
+<script>
+const ANIMALS = [
+  { key:'lion',    name:'Lion',      vp:'1000', stars:5, rarity:'LEGENDARY' },
+  { key:'tiger',   name:'Tiger',     vp:'800',  stars:5, rarity:'EPIC'      },
+  { key:'jaguar',  name:'Jaguar',    vp:'600',  stars:4, rarity:'RARE'      },
+  { key:'gorilla', name:'Gorilla',   vp:'500',  stars:4, rarity:'RARE'      },
+  { key:'croc',    name:'Crocodile', vp:'400',  stars:3, rarity:'UNCOMMON'  },
+  { key:'falcon',  name:'Falcon',    vp:'300',  stars:3, rarity:'UNCOMMON'  },
+  { key:'cobra',   name:'Cobra',     vp:'200',  stars:2, rarity:'COMMON'    },
+];
+
+const ARTWORK = {
+  lion:`
+<defs>
+  <linearGradient id="lion-sky" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#1e1b4b"/><stop offset="35%" stop-color="#4c1d95"/>
+    <stop offset="65%" stop-color="#b45309"/><stop offset="100%" stop-color="#ea580c"/>
+  </linearGradient>
+  <radialGradient id="lion-sun" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#fffbeb"/><stop offset="30%" stop-color="#fef08a"/>
+    <stop offset="70%" stop-color="#f97316" stop-opacity=".4"/><stop offset="100%" stop-color="#f97316" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="ldust"><feGaussianBlur stdDeviation="1"/></filter>
+</defs>
+<rect width="200" height="300" fill="url(#lion-sky)"/>
+<circle cx="100" cy="185" r="60" fill="url(#lion-sun)"/>
+<circle cx="42" cy="165" r="1.5" fill="#fde047" opacity=".7" filter="url(#ldust)"/>
+<circle cx="155" cy="125" r="2" fill="#fde047" opacity=".5" filter="url(#ldust)"/>
+<circle cx="80" cy="115" r="1.2" fill="#fffbeb" opacity=".9"/>
+<path d="M-10 310 L60 215 L150 215 L220 310Z" fill="#291305"/>
+<g transform="translate(105,145) scale(.68)">
+  <path d="M-28 50C-42 30-48 10-32-8C-16-26 16-28 32-14C48 0 42 25 30 42C18 55-14 60-28 50Z" fill="#321102" stroke="#1c0700" stroke-width="2.5"/>
+  <path d="M-22 45C-34 26-38 12-26-4C-14-20 10-22 24-10C38 2 34 20 24 34Z" fill="#7c2d12"/>
+  <path d="M-15-6C-20-18-5-22 0-22C5-22 20-18 15-6L10 12L-10 12Z" fill="#ca8a04" stroke="#451a03" stroke-width="1.5"/>
+  <path d="M-8-6Q0-18 8-6Q10 5 8 10H-8Z" fill="#eab308"/>
+  <path d="M-5 1Q0-5 5 1L3 7H-3Z" fill="#7f1d1d"/>
+  <polygon points="-1,6 1,6 0,2" fill="#fff"/>
+  <path d="M-35 5C-45 15-42 30-32 45" fill="none" stroke="#fde047" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>
+  <path d="M35 5C45 15 42 30 32 45" fill="none" stroke="#fde047" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>
+  <path d="M-18-24Q0-28 20-24" fill="none" stroke="#fffbeb" stroke-width="2" opacity=".9"/>
+  <path d="M-10-10L-5-8" stroke="#321102" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M10-10L5-8" stroke="#321102" stroke-width="2.5" stroke-linecap="round"/>
+</g>`,
+
+  tiger:`
+<defs>
+  <linearGradient id="tj" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#022c22"/><stop offset="50%" stop-color="#064e3b"/>
+    <stop offset="100%" stop-color="#14532d"/>
+  </linearGradient>
+  <radialGradient id="te" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#ff781f" stop-opacity=".85"/><stop offset="100%" stop-color="#7c2d12" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="tblur"><feGaussianBlur stdDeviation="4"/></filter>
+</defs>
+<rect width="200" height="300" fill="url(#tj)"/>
+<circle cx="100" cy="155" r="90" fill="url(#te)"/>
+<path d="M-10-10Q50 30 30 90Q-20 60-10-10Z" fill="#022c22" opacity=".8"/>
+<path d="M210-10Q150 30 170 90Q220 60 210-10Z" fill="#022c22" opacity=".8"/>
+<g transform="translate(100,155) scale(.8)">
+  <ellipse cx="0" cy="0" rx="60" ry="40" fill="#f97316" opacity=".25" filter="url(#tblur)"/>
+  <path d="M-40 40Q0-20 40 40Q50 90 0 100Q-50 90-40 40Z" fill="#1c0702"/>
+  <path d="M-35 35Q0-15 35 35Q42 80 0 90Q-42 80-35 35Z" fill="#ea580c"/>
+  <path d="M-55 20C-65 0-45-15-35 0L-25 25Z" fill="#ea580c" stroke="#1c0702" stroke-width="1.5"/>
+  <circle cx="-50" cy="-5" r="2.5" fill="#fff"/>
+  <circle cx="-44" cy="-9" r="2.5" fill="#fff"/>
+  <path d="M55 20C65 0 45-15 35 0L25 25Z" fill="#ea580c" stroke="#1c0702" stroke-width="1.5"/>
+  <circle cx="50" cy="-5" r="2.5" fill="#fff"/>
+  <circle cx="44" cy="-9" r="2.5" fill="#fff"/>
+  <circle cx="0" cy="-25" r="28" fill="#ea580c" stroke="#1c0702" stroke-width="2.5"/>
+  <path d="M-18-45L-28-55L-12-38Z M18-45L28-55L12-38Z" fill="#ea580c" stroke="#1c0702" stroke-width="1.5"/>
+  <path d="M-12-15C-22-20-18-8 0-8C18-8 22-20 12-15C10-5-10-5-12-15Z" fill="#fff"/>
+  <path d="M-26-28L-14-26M-27-20L-16-20M-24-12L-15-14" stroke="#1c0702" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M26-28L14-26M27-20L16-20M24-12L15-14" stroke="#1c0702" stroke-width="3.5" stroke-linecap="round"/>
+  <ellipse cx="-10" cy="-28" rx="4.5" ry="3.5" fill="#facc15" stroke="#1c0702" stroke-width="1.5"/>
+  <ellipse cx="10" cy="-28" rx="4.5" ry="3.5" fill="#facc15" stroke="#1c0702" stroke-width="1.5"/>
+  <circle cx="-9.5" cy="-28" r="1.8" fill="#000"/>
+  <circle cx="9.5" cy="-28" r="1.8" fill="#000"/>
+  <circle cx="-11" cy="-29" r=".8" fill="#fff"/>
+  <circle cx="8" cy="-29" r=".8" fill="#fff"/>
+</g>`,
+
+  jaguar:`
+<defs>
+  <linearGradient id="jg" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#061214"/><stop offset="60%" stop-color="#02201b"/><stop offset="100%" stop-color="#060814"/>
+  </linearGradient>
+  <filter id="jmist"><feGaussianBlur stdDeviation="8"/></filter>
+  <filter id="jglow"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="200" height="300" fill="url(#jg)"/>
+<ellipse cx="100" cy="270" rx="110" ry="40" fill="#14532d" opacity=".25" filter="url(#jmist)"/>
+<ellipse cx="100" cy="185" rx="110" ry="40" fill="#022c22" opacity=".3" filter="url(#jmist)"/>
+<circle cx="30" cy="80" r="1.5" fill="#a7f3d0" opacity=".8"/>
+<circle cx="160" cy="90" r="2.2" fill="#34d399" opacity=".6"/>
+<circle cx="120" cy="210" r="2.8" fill="#10b981" opacity=".4"/>
+<g transform="translate(100,140) scale(.72)">
+  <circle cx="0" cy="0" r="55" fill="#020617" opacity=".7" filter="url(#jmist)"/>
+  <path d="M-45 50C-45 10-25-10 0-10C25-10 45 10 45 50Z" fill="#040815" stroke="#10b981" stroke-width="1" opacity=".9"/>
+  <path d="M-40 45C-40 15-22-5 0-5C22-5 40 15 40 45Z" fill="#090d1f"/>
+  <path d="M-42 40C-42 18-25 0 0 0" fill="none" stroke="#10b981" stroke-width="1.5" opacity=".6"/>
+  <path d="M42 40C42 18 25 0 0 0" fill="none" stroke="#10b981" stroke-width="1.5" opacity=".6"/>
+  <circle cx="0" cy="-15" r="24" fill="#030712" stroke="#0f172a" stroke-width="2"/>
+  <path d="M-15-35C-22-42-8-45-10-36Z M15-35C22-42 8-45 10-36Z" fill="#020617" stroke="#10b981" stroke-width="1"/>
+  <ellipse cx="0" cy="-8" rx="10" ry="7" fill="#020617"/>
+  <polygon points="-2.5,-10 2.5,-10 0,-7" fill="#10b981"/>
+  <g filter="url(#jglow)">
+    <polygon points="-12,-20 -6,-16 -12,-15" fill="#0df293"/>
+    <polygon points="12,-20 6,-16 12,-15" fill="#0df293"/>
+    <circle cx="-10.5" cy="-17.5" r="1.5" fill="#fff"/>
+    <circle cx="10.5" cy="-17.5" r="1.5" fill="#fff"/>
+  </g>
+</g>`,
+
+  gorilla:`
+<defs>
+  <linearGradient id="gg" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#0f172a"/><stop offset="60%" stop-color="#1e293b"/><stop offset="100%" stop-color="#334155"/>
+  </linearGradient>
+  <filter id="gfog"><feGaussianBlur stdDeviation="6"/></filter>
+</defs>
+<rect width="200" height="300" fill="url(#gg)"/>
+<rect x="15" y="40" width="22" height="260" fill="#0f172a" opacity=".8"/>
+<rect x="15" y="38" width="25" height="12" fill="#1e293b" opacity=".9"/>
+<rect x="160" y="20" width="25" height="280" fill="#0f172a" opacity=".6"/>
+<ellipse cx="100" cy="225" rx="120" ry="45" fill="#64748b" opacity=".2" filter="url(#gfog)"/>
+<g transform="translate(100,160) scale(.85)">
+  <path d="M-55 70C-55 0-45-35 0-35C45-35 55 0 55 70Z" fill="#030712" opacity=".65" filter="url(#gfog)"/>
+  <path d="M-50 75C-50 5-35-25 0-25C35-25 50 5 50 75Z" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+  <path d="M-44 75C-44 12-30-18 0-18C30-18 44 12 44 75Z" fill="#1e293b"/>
+  <path d="M-22 10Q0-10 22 10L18 75H-18Z" fill="#cbd5e1" opacity=".15"/>
+  <path d="M-28 2Q0-16 28 2" fill="none" stroke="#cbd5e1" stroke-width="3" opacity=".3" stroke-linecap="round"/>
+  <path d="M-18-20C-22-35 22-35 18-20L14-5L-14-5Z" fill="#0f172a" stroke="#334155" stroke-width="1.5"/>
+  <rect x="-11" y="-22" width="22" height="4" rx="2" fill="#334155"/>
+  <path d="M-10-18Q0-14 10-18L8-5Q0-2-8-5Z" fill="#020617"/>
+  <circle cx="-5" cy="-16" r="1" fill="#ff9800"/>
+  <circle cx="5" cy="-16" r="1" fill="#ff9800"/>
+  <path d="M-8-32Q0-38 8-32L6-28L-6-28Z" fill="#0f172a"/>
+  <path d="M-45 35C-58 10-50 75-35 75Z" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <path d="M45 35C58 10 50 75 35 75Z" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+</g>`,
+
+  croc:`
+<defs>
+  <linearGradient id="cg" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#021c15"/><stop offset="60%" stop-color="#064e3b"/><stop offset="100%" stop-color="#022c22"/>
+  </linearGradient>
+  <radialGradient id="cglow" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#10b981" stop-opacity=".45"/><stop offset="100%" stop-color="#064e3b" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="csplash"><feGaussianBlur stdDeviation="1.5"/></filter>
+</defs>
+<rect width="200" height="300" fill="url(#cg)"/>
+<circle cx="100" cy="150" r="80" fill="url(#cglow)"/>
+<polygon points="100,0 60,300 80,300" fill="#34d399" opacity=".08"/>
+<path d="M10 300Q15 200 8 120" fill="none" stroke="#022c22" stroke-width="2.5" opacity=".8"/>
+<path d="M185 300Q175 190 190 110" fill="none" stroke="#022c22" stroke-width="3" opacity=".7"/>
+<ellipse cx="100" cy="205" rx="55" ry="12" fill="none" stroke="#047857" stroke-width="1.5" opacity=".4"/>
+<g transform="translate(100,160) scale(.8)">
+  <ellipse cx="0" cy="40" rx="45" ry="20" fill="#01100c" opacity=".7"/>
+  <path d="M-45 35L-20 18Q0 12 35 22L45 35L40 44L-40 44Z" fill="#022c22" stroke="#064e3b" stroke-width="1.5"/>
+  <polygon points="-38,30 -33,20 -28,30" fill="#022c22" stroke="#047857" stroke-width="1"/>
+  <polygon points="-28,26 -23,16 -18,26" fill="#022c22" stroke="#047857" stroke-width="1"/>
+  <polygon points="-18,22 -13,12 -8,22" fill="#022c22" stroke="#047857" stroke-width="1"/>
+  <circle cx="12" cy="18" r="3.5" fill="#f59e0b" stroke="#022c22" stroke-width="1"/>
+  <polygon points="12,14.5 12,21.5 13.5,18" fill="#000"/>
+  <circle cx="11.2" cy="17" r=".8" fill="#fff"/>
+</g>
+<g filter="url(#csplash)" opacity=".7">
+  <path d="M50 200Q40 180 35 185" fill="none" stroke="#a7f3d0" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M55 202Q48 170 42 178" fill="none" stroke="#a7f3d0" stroke-width="2" stroke-linecap="round"/>
+  <path d="M150 200Q160 180 165 185" fill="none" stroke="#a7f3d0" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M145 202Q152 170 158 178" fill="none" stroke="#a7f3d0" stroke-width="2" stroke-linecap="round"/>
+</g>`,
+
+  falcon:`
+<defs>
+  <linearGradient id="fsky" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#0c1d3a"/><stop offset="40%" stop-color="#1e3a8a"/>
+    <stop offset="70%" stop-color="#c5a880"/><stop offset="100%" stop-color="#ffb070"/>
+  </linearGradient>
+  <linearGradient id="fsun" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#fffbeb" stop-opacity=".9"/><stop offset="100%" stop-color="#ca8a04" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="fmtn" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#2c3a50"/><stop offset="100%" stop-color="#0b0f19"/>
+  </linearGradient>
+  <filter id="fwind"><feGaussianBlur stdDeviation="3"/></filter>
+</defs>
+<rect width="200" height="300" fill="url(#fsky)"/>
+<circle cx="40" cy="220" r="80" fill="url(#fsun)"/>
+<polygon points="40,220 0,60 30,50" fill="#fef08a" opacity=".15"/>
+<polygon points="40,220 80,30 110,40" fill="#fef08a" opacity=".15"/>
+<polygon points="40,220 160,80 180,110" fill="#fef08a" opacity=".15"/>
+<polygon points="-50,300 30,170 120,300" fill="#1e293b" opacity=".8"/>
+<polygon points="30,170 42,190 25,195" fill="#f1f5f9" opacity=".9"/>
+<path d="M60 300L120 140L160 210L200 130L260 300Z" fill="url(#fmtn)"/>
+<polygon points="120,140 128,162 110,168" fill="#f8fafc"/>
+<polygon points="200,130 208,155 190,160" fill="#ffffff"/>
+<path d="M-10 100Q60 80 130 110T210 90" fill="none" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="30 15" opacity=".25" filter="url(#fwind)"/>
+<g transform="translate(100,110) scale(.95)">
+  <path d="M-90-10C-40-45-10-25 0 0C10-25 40-45 90-10C78 68 62 55 0 62C-62 55-78 68-90-10Z" fill="#090f21" opacity=".6"/>
+  <path d="M-85-15C-45-40-12-20 0 5C12-20 45-40 85-15C60 15 30 0 0 8C-30 0-60 15-85-15Z" fill="#cbd5e1" stroke="#334155" stroke-width="2"/>
+  <path d="M-75-10C-40-30-10-15 0 5C10-15 40-30 75-10C50 10 25 2 0 6C-25 2-50 10-75-10Z" fill="#f1f5f9"/>
+  <path d="M-80-12L-65 0M-60-18L-48-3M-40-20L-32-5M80-12L65 0M60-18L48-3M40-20L32-5" stroke="#94a3b8" stroke-width="1.5"/>
+  <path d="M-15 8L-5 25L5 25L15 8Z" fill="#94a3b8"/>
+  <ellipse cx="0" cy="-2" rx="12" ry="18" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>
+  <path d="M-8-8C-8-22 8-22 8-8L4 5L-4 5Z" fill="#ffffff" stroke="#475569" stroke-width="1"/>
+  <polygon points="-3,-14 3,-14 0,-4" fill="#f59e0b" stroke="#ca8a04" stroke-width="1"/>
+  <circle cx="-3" cy="-16" r="1.2" fill="#000"/>
+  <circle cx="3" cy="-16" r="1.2" fill="#000"/>
+  <circle cx="-3.3" cy="-16.3" r=".5" fill="#fff"/>
+  <path d="M-10-2C-10-15 10-15 10-2" fill="none" stroke="#fde047" stroke-width="1" opacity=".6"/>
+</g>`,
+
+  cobra:`
+<defs>
+  <linearGradient id="cbg" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#1e0a15"/><stop offset="50%" stop-color="#311005"/>
+    <stop offset="85%" stop-color="#5c1d06"/><stop offset="100%" stop-color="#1a0007"/>
+  </linearGradient>
+  <radialGradient id="cven" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#e11d48" stop-opacity=".5"/><stop offset="100%" stop-color="#311005" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="cvglow"><feGaussianBlur stdDeviation="3.5"/></filter>
+</defs>
+<rect width="200" height="300" fill="url(#cbg)"/>
+<circle cx="25" cy="30" r=".8" fill="#fff" opacity=".8"/>
+<circle cx="165" cy="45" r="1" fill="#fff" opacity=".9"/>
+<path d="M-20 300L25 150L40 150L60 300Z" fill="#2d1502" opacity=".8"/>
+<path d="M220 300L175 150L160 150L140 300Z" fill="#2d1502" opacity=".8"/>
+<rect x="25" y="145" width="18" height="6" fill="#451a03" opacity=".9"/>
+<rect x="157" y="145" width="18" height="6" fill="#451a03" opacity=".9"/>
+<circle cx="100" cy="160" r="75" fill="url(#cven)"/>
+<g transform="translate(100,150) scale(.75)">
+  <path d="M-35 80Q-60 10 0-35Q60 10 35 80Z" fill="#000" opacity=".5" filter="url(#cvglow)"/>
+  <path d="M-30 80Q-55 15 0-30Q55 15 30 80Z" fill="#4c0519" stroke="#900c3f" stroke-width="2.5"/>
+  <path d="M-22 55Q-38 18-10-8" fill="none" stroke="#f43f5e" stroke-width="3" opacity=".6" stroke-linecap="round"/>
+  <path d="M22 55Q38 18 10-8" fill="none" stroke="#f43f5e" stroke-width="3" opacity=".6" stroke-linecap="round"/>
+  <path d="M-12 10Q0 18 12 10Q0-2-12 10Z" fill="#9f1239" stroke="#f43f5e" stroke-width="1.5"/>
+  <circle cx="-5" cy="9" r="2.5" fill="#1e0a15"/>
+  <circle cx="5" cy="9" r="2.5" fill="#1e0a15"/>
+  <path d="M-14 80L-10 120L10 120L14 80Z" fill="#4c0519" stroke="#900c3f" stroke-width="2"/>
+  <path d="M-25 110Q0 125 25 110" fill="none" stroke="#900c3f" stroke-width="12" stroke-linecap="round"/>
+  <ellipse cx="0" cy="-28" rx="14" ry="11" fill="#4c0519" stroke="#900c3f" stroke-width="2"/>
+  <path d="M-10-25L0-33L10-25Z" fill="#31000e"/>
+  <circle cx="-5" cy="-27" r="2.2" fill="#ff2a5f"/>
+  <circle cx="5" cy="-27" r="2.2" fill="#ff2a5f"/>
+  <circle cx="-4.5" cy="-28" r=".6" fill="#fff"/>
+  <circle cx="5.5" cy="-28" r=".6" fill="#fff"/>
+  <polygon points="-6,-20 -4,-20 -5,-11" fill="#fff"/>
+  <polygon points="6,-20 4,-20 5,-11" fill="#fff"/>
+  <circle cx="-5" cy="-7" r="1.5" fill="#22c55e" opacity=".85" filter="url(#cvglow)"/>
+  <circle cx="5" cy="-9" r="1.2" fill="#22c55e" opacity=".85"/>
+</g>`
+};
+
+const STAR_SVG = `<svg viewBox="0 0 24 24" class="star"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192L12 .587z"/></svg>`;
+
+const container = document.getElementById('cards');
+ANIMALS.forEach(a => {
+  const svg = ARTWORK[a.key];
+  const wrap = document.createElement('div');
+  wrap.className = 'card-wrap';
+  wrap.innerHTML = `
+    <div class="frame frame-${a.key}">
+      <div class="shimmer"></div>
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+      <div class="card-inner">
+        <div class="card-header header-${a.key}">
+          <div class="stars">${Array.from({length:a.stars}).map(()=>
+            `<svg viewBox="0 0 24 24" class="star ${`star-${a.key}`}"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192L12 .587z"/></svg>`
+          ).join('')}</div>
+          <span class="name">${a.name}</span>
+          <span class="rarity rarity-${a.key}">${a.rarity}</span>
+        </div>
+        <div class="card-art">
+          <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">${svg}</svg>
+          <div class="art-vignette"></div>
+        </div>
+        <div class="card-footer footer-${a.key}">
+          <div class="vp-badge vp-${a.key}">
+            <span class="vp-num">${a.vp}</span>
+            <span class="vp-label">VP</span>
+          </div>
+          <div class="footer-text">
+            <div class="footer-action ft-${a.key}">ROAR ATTACK</div>
+            <div class="footer-desc">Double bid challenge</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  container.appendChild(wrap);
+});
+</script>
+</body>
+</html>
