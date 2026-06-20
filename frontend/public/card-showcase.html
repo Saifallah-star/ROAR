@@ -1,219 +1,552 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ROAR — Premium Card Showcase</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600;700;900&display=swap"
+    rel="stylesheet" />
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{
-      background:#04050f;
-      color:#f0ece0;
-      font-family:'Inter',sans-serif;
-      min-height:100vh;
-      padding:40px 24px 80px;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background: #04050f;
+      color: #f0ece0;
+      font-family: 'Inter', sans-serif;
+      min-height: 80vh;
+      padding: 40px 24px 80px;
       background-image:
-        radial-gradient(ellipse 60% 50% at 20% 20%,rgba(196,30,58,.12) 0,transparent 60%),
-        radial-gradient(ellipse 50% 40% at 80% 80%,rgba(212,160,23,.08) 0,transparent 60%);
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(196, 30, 58, .12) 0, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(212, 160, 23, .08) 0, transparent 60%);
     }
-    h1{
-      font-family:'Cinzel',serif;
-      font-weight:900;
-      font-size:clamp(1.5rem,4vw,3rem);
-      text-align:center;
-      letter-spacing:.25em;
-      background:linear-gradient(to bottom,#fef08a,#d4a017);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      margin-bottom:8px;
-      text-shadow:none;
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      text-align: center;
+      letter-spacing: .25em;
+      background: linear-gradient(to bottom, #fef08a, #d4a017);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      text-shadow: none;
     }
-    .subtitle{
-      text-align:center;
-      font-size:.7rem;
-      letter-spacing:.35em;
-      text-transform:uppercase;
-      color:#6b6b8a;
-      margin-bottom:48px;
+
+    .subtitle {
+      text-align: center;
+      font-size: .7rem;
+      letter-spacing: .35em;
+      text-transform: uppercase;
+      color: #6b6b8a;
+      margin-bottom: 48px;
     }
-    .grid{
-      display:flex;
-      flex-wrap:wrap;
-      gap:32px;
-      justify-content:center;
-      align-items:flex-start;
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: center;
+      align-items: flex-start;
     }
+
     /* ── Card outer shell ── */
-    .card-wrap{
-      width:160px;
-      aspect-ratio:2.5/3.6;
-      flex-shrink:0;
-      transition:transform .3s ease,box-shadow .3s ease;
-      cursor:pointer;
-      perspective:1000px;
+    .card-wrap {
+      width: 160px;
+      aspect-ratio: 2.5/3.6;
+      flex-shrink: 0;
+      transition: transform .3s ease, box-shadow .3s ease;
+      cursor: pointer;
+      perspective: 1000px;
     }
-    .card-wrap:hover{
-      transform:translateY(-12px) scale(1.06);
+
+    .card-wrap:hover {
+      transform: translateY(-12px) scale(1.06);
     }
+
     /* ── Frame ── */
-    .frame{
-      width:100%;height:100%;
-      border-radius:14px;
-      padding:3px;
-      display:flex;
-      flex-direction:column;
-      position:relative;
-      overflow:hidden;
+    .frame {
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+      padding: 3px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
     }
-    .frame::before{
-      content:'';
-      position:absolute;inset:0;
-      background:radial-gradient(ellipse at top,rgba(255,255,255,.18) 0,transparent 60%);
-      pointer-events:none;z-index:1;border-radius:inherit;
+
+    .frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at top, rgba(255, 255, 255, .18) 0, transparent 60%);
+      pointer-events: none;
+      z-index: 1;
+      border-radius: inherit;
     }
-    .frame::after{
-      content:'';
-      position:absolute;inset:0;
-      background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.12));
-      pointer-events:none;z-index:1;border-radius:inherit;
+
+    .frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, .12));
+      pointer-events: none;
+      z-index: 1;
+      border-radius: inherit;
     }
+
     /* Frame color per animal */
-    .frame-lion   {background:linear-gradient(to bottom,#f59e0b,#b45309,#451a03);box-shadow:0 0 30px rgba(245,158,11,.4),0 16px 40px rgba(0,0,0,.9);}
-    .frame-tiger  {background:linear-gradient(to bottom,#f97316,#b91c1c,#7c2d12);box-shadow:0 0 30px rgba(249,115,22,.4),0 16px 40px rgba(0,0,0,.9);}
-    .frame-jaguar {background:linear-gradient(to bottom,#34d399,#047857,#064e3b);box-shadow:0 0 30px rgba(16,185,129,.4),0 16px 40px rgba(0,0,0,.9);}
-    .frame-gorilla{background:linear-gradient(to bottom,#94a3b8,#475569,#0f172a);box-shadow:0 0 30px rgba(148,163,184,.3),0 16px 40px rgba(0,0,0,.9);}
-    .frame-croc   {background:linear-gradient(to bottom,#22c55e,#15803d,#14532d);box-shadow:0 0 30px rgba(34,197,94,.3),0 16px 40px rgba(0,0,0,.9);}
-    .frame-falcon {background:linear-gradient(to bottom,#38bdf8,#f59e0b,#0ea5e9);box-shadow:0 0 30px rgba(56,189,248,.35),0 16px 40px rgba(0,0,0,.9);}
-    .frame-cobra  {background:linear-gradient(to bottom,#fb7185,#be123c,#500724);box-shadow:0 0 30px rgba(251,113,133,.35),0 16px 40px rgba(0,0,0,.9);}
+    .frame-lion {
+      background: linear-gradient(to bottom, #f59e0b, #b45309, #451a03);
+      box-shadow: 0 0 30px rgba(245, 158, 11, .4), 0 16px 40px rgba(0, 0, 0, .9);
+    }
+
+    .frame-tiger {
+      background: linear-gradient(to bottom, #f97316, #b91c1c, #7c2d12);
+      box-shadow: 0 0 30px rgba(249, 115, 22, .4), 0 16px 40px rgba(0, 0, 0, .9);
+    }
+
+    .frame-jaguar {
+      background: linear-gradient(to bottom, #34d399, #047857, #064e3b);
+      box-shadow: 0 0 30px rgba(16, 185, 129, .4), 0 16px 40px rgba(0, 0, 0, .9);
+    }
+
+    .frame-gorilla {
+      background: linear-gradient(to bottom, #94a3b8, #475569, #0f172a);
+      box-shadow: 0 0 30px rgba(148, 163, 184, .3), 0 16px 40px rgba(0, 0, 0, .9);
+    }
+
+    .frame-croc {
+      background: linear-gradient(to bottom, #22c55e, #15803d, #14532d);
+      box-shadow: 0 0 30px rgba(34, 197, 94, .3), 0 16px 40px rgba(0, 0, 0, .9);
+    }
+
+    .frame-falcon {
+      background: linear-gradient(to bottom, #38bdf8, #f59e0b, #0ea5e9);
+      box-shadow: 0 0 30px rgba(56, 189, 248, .35), 0 16px 40px rgba(0, 0, 0, .9);
+    }
+
+    .frame-cobra {
+      background: linear-gradient(to bottom, #fb7185, #be123c, #500724);
+      box-shadow: 0 0 30px rgba(251, 113, 133, .35), 0 16px 40px rgba(0, 0, 0, .9);
+    }
 
     /* Corner filigree brackets */
-    .corner{position:absolute;width:10px;height:10px;pointer-events:none;z-index:2;}
-    .corner-tl{top:5px;left:5px;border-top:1.5px solid rgba(255,255,255,.3);border-left:1.5px solid rgba(255,255,255,.3);}
-    .corner-tr{top:5px;right:5px;border-top:1.5px solid rgba(255,255,255,.3);border-right:1.5px solid rgba(255,255,255,.3);}
-    .corner-bl{bottom:5px;left:5px;border-bottom:1.5px solid rgba(255,255,255,.3);border-left:1.5px solid rgba(255,255,255,.3);}
-    .corner-br{bottom:5px;right:5px;border-bottom:1.5px solid rgba(255,255,255,.3);border-right:1.5px solid rgba(255,255,255,.3);}
+    .corner {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      pointer-events: none;
+      z-index: 2;
+    }
 
-    .card-inner{
-      width:100%;height:100%;
-      border-radius:11px;
-      overflow:hidden;
-      display:flex;flex-direction:column;
-      background:#060810;
-      position:relative;z-index:0;
+    .corner-tl {
+      top: 5px;
+      left: 5px;
+      border-top: 1.5px solid rgba(255, 255, 255, .3);
+      border-left: 1.5px solid rgba(255, 255, 255, .3);
     }
+
+    .corner-tr {
+      top: 5px;
+      right: 5px;
+      border-top: 1.5px solid rgba(255, 255, 255, .3);
+      border-right: 1.5px solid rgba(255, 255, 255, .3);
+    }
+
+    .corner-bl {
+      bottom: 5px;
+      left: 5px;
+      border-bottom: 1.5px solid rgba(255, 255, 255, .3);
+      border-left: 1.5px solid rgba(255, 255, 255, .3);
+    }
+
+    .corner-br {
+      bottom: 5px;
+      right: 5px;
+      border-bottom: 1.5px solid rgba(255, 255, 255, .3);
+      border-right: 1.5px solid rgba(255, 255, 255, .3);
+    }
+
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 11px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #060810;
+      position: relative;
+      z-index: 0;
+    }
+
     /* ── Header ── */
-    .card-header{
-      padding:6px 10px;
-      display:flex;align-items:center;justify-content:space-between;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      position:relative;z-index:2;
-      flex-shrink:0;
+    .card-header {
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
     }
-    .card-header::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:rgba(255,255,255,.2);}
-    .header-lion   {background:linear-gradient(to right,rgba(120,53,15,.9),rgba(101,44,14,.9));}
-    .header-tiger  {background:linear-gradient(to right,rgba(124,45,18,.9),rgba(127,29,29,.9));}
-    .header-jaguar {background:linear-gradient(to right,rgba(6,78,59,.9),rgba(19,78,74,.9));}
-    .header-gorilla{background:linear-gradient(to right,rgba(15,23,42,.9),rgba(28,25,23,.9));}
-    .header-croc   {background:linear-gradient(to right,rgba(20,83,45,.9),rgba(6,78,59,.9));}
-    .header-falcon {background:linear-gradient(to right,rgba(8,47,73,.9),rgba(30,27,75,.9));}
-    .header-cobra  {background:linear-gradient(to right,rgba(76,5,25,.9),rgba(127,29,29,.9));}
-    .stars{display:flex;gap:2px;align-items:center;}
-    .star{width:9px;height:9px;}
-    .name{font-family:'Cinzel',serif;font-weight:900;font-size:.52rem;letter-spacing:.2em;color:#fff;text-transform:uppercase;}
-    .rarity{font-size:.38rem;font-weight:900;letter-spacing:.2em;text-transform:uppercase;padding:1px 5px;background:rgba(0,0,0,.6);border-radius:3px;border:1px solid rgba(255,255,255,.1);}
-    .rarity-lion   {color:#f59e0b;}
-    .rarity-tiger  {color:#f97316;}
-    .rarity-jaguar {color:#34d399;}
-    .rarity-gorilla{color:#94a3b8;}
-    .rarity-croc   {color:#22c55e;}
-    .rarity-falcon {color:#38bdf8;}
-    .rarity-cobra  {color:#fb7185;}
-    .star-lion   {fill:#f59e0b;filter:drop-shadow(0 0 2px #f59e0b);}
-    .star-tiger  {fill:#f97316;filter:drop-shadow(0 0 2px #f97316);}
-    .star-jaguar {fill:#34d399;filter:drop-shadow(0 0 2px #34d399);}
-    .star-gorilla{fill:#94a3b8;filter:drop-shadow(0 0 2px #94a3b8);}
-    .star-croc   {fill:#22c55e;filter:drop-shadow(0 0 2px #22c55e);}
-    .star-falcon {fill:#38bdf8;filter:drop-shadow(0 0 2px #38bdf8);}
-    .star-cobra  {fill:#fb7185;filter:drop-shadow(0 0 2px #fb7185);}
+
+    .card-header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(255, 255, 255, .2);
+    }
+
+    .header-lion {
+      background: linear-gradient(to right, rgba(120, 53, 15, .9), rgba(101, 44, 14, .9));
+    }
+
+    .header-tiger {
+      background: linear-gradient(to right, rgba(124, 45, 18, .9), rgba(127, 29, 29, .9));
+    }
+
+    .header-jaguar {
+      background: linear-gradient(to right, rgba(6, 78, 59, .9), rgba(19, 78, 74, .9));
+    }
+
+    .header-gorilla {
+      background: linear-gradient(to right, rgba(15, 23, 42, .9), rgba(28, 25, 23, .9));
+    }
+
+    .header-croc {
+      background: linear-gradient(to right, rgba(20, 83, 45, .9), rgba(6, 78, 59, .9));
+    }
+
+    .header-falcon {
+      background: linear-gradient(to right, rgba(8, 47, 73, .9), rgba(30, 27, 75, .9));
+    }
+
+    .header-cobra {
+      background: linear-gradient(to right, rgba(76, 5, 25, .9), rgba(127, 29, 29, .9));
+    }
+
+    .stars {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .star {
+      width: 9px;
+      height: 9px;
+    }
+
+    .name {
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: .52rem;
+      letter-spacing: .2em;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .rarity {
+      font-size: .38rem;
+      font-weight: 900;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      background: rgba(0, 0, 0, .6);
+      border-radius: 3px;
+      border: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .rarity-lion {
+      color: #f59e0b;
+    }
+
+    .rarity-tiger {
+      color: #f97316;
+    }
+
+    .rarity-jaguar {
+      color: #34d399;
+    }
+
+    .rarity-gorilla {
+      color: #94a3b8;
+    }
+
+    .rarity-croc {
+      color: #22c55e;
+    }
+
+    .rarity-falcon {
+      color: #38bdf8;
+    }
+
+    .rarity-cobra {
+      color: #fb7185;
+    }
+
+    .star-lion {
+      fill: #f59e0b;
+      filter: drop-shadow(0 0 2px #f59e0b);
+    }
+
+    .star-tiger {
+      fill: #f97316;
+      filter: drop-shadow(0 0 2px #f97316);
+    }
+
+    .star-jaguar {
+      fill: #34d399;
+      filter: drop-shadow(0 0 2px #34d399);
+    }
+
+    .star-gorilla {
+      fill: #94a3b8;
+      filter: drop-shadow(0 0 2px #94a3b8);
+    }
+
+    .star-croc {
+      fill: #22c55e;
+      filter: drop-shadow(0 0 2px #22c55e);
+    }
+
+    .star-falcon {
+      fill: #38bdf8;
+      filter: drop-shadow(0 0 2px #38bdf8);
+    }
+
+    .star-cobra {
+      fill: #fb7185;
+      filter: drop-shadow(0 0 2px #fb7185);
+    }
+
     /* ── Art area ── */
-    .card-art{flex:1;position:relative;overflow:hidden;}
-    .card-art svg{width:100%;height:100%;}
-    .art-vignette{position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(to top,rgba(0,0,0,.85),transparent);pointer-events:none;z-index:1;}
+    .card-art {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-art svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .art-vignette {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: linear-gradient(to top, rgba(0, 0, 0, .85), transparent);
+      pointer-events: none;
+      z-index: 1;
+    }
+
     /* ── Footer ── */
-    .card-footer{
-      padding:7px 10px;
-      display:flex;align-items:center;gap:8px;
-      border-top:1px solid rgba(255,255,255,.06);
-      position:relative;flex-shrink:0;
+    .card-footer {
+      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-top: 1px solid rgba(255, 255, 255, .06);
+      position: relative;
+      flex-shrink: 0;
     }
-    .footer-lion   {background:linear-gradient(to top,#1a0f05,#291708,#120a03);}
-    .footer-tiger  {background:linear-gradient(to top,#1f0d05,#331508,#140803);}
-    .footer-jaguar {background:linear-gradient(to top,#04140f,#092b20,#020b08);}
-    .footer-gorilla{background:linear-gradient(to top,#111827,#1f2937,#030712);}
-    .footer-croc   {background:linear-gradient(to top,#051405,#0b290b,#020802);}
-    .footer-falcon {background:linear-gradient(to top,#09152b,#13284f,#030a17);}
-    .footer-cobra  {background:linear-gradient(to top,#14040a,#290916,#080205);}
-    .vp-badge{
-      width:38px;height:38px;border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      flex-direction:column;
-      position:relative;flex-shrink:0;
-      border:2px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.75);
+
+    .footer-lion {
+      background: linear-gradient(to top, #1a0f05, #291708, #120a03);
     }
-    .vp-num{font-family:'Cinzel',serif;font-weight:900;font-size:.55rem;color:#fff;line-height:1;}
-    .vp-label{font-size:.32rem;font-weight:900;color:rgba(255,255,255,.4);letter-spacing:.15em;text-transform:uppercase;}
-    .vp-lion   {box-shadow:0 0 12px rgba(245,158,11,.5);}
-    .vp-tiger  {box-shadow:0 0 12px rgba(249,115,22,.5);}
-    .vp-jaguar {box-shadow:0 0 12px rgba(16,185,129,.5);}
-    .vp-gorilla{box-shadow:0 0 12px rgba(148,163,184,.4);}
-    .vp-croc   {box-shadow:0 0 12px rgba(16,185,129,.4);}
-    .vp-falcon {box-shadow:0 0 12px rgba(56,189,248,.4);}
-    .vp-cobra  {box-shadow:0 0 12px rgba(225,29,72,.4);}
-    .footer-text{flex:1;text-align:right;}
-    .footer-action{font-size:.42rem;font-weight:900;text-transform:uppercase;letter-spacing:.15em;}
-    .footer-desc{font-size:.35rem;color:rgba(255,255,255,.3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:1px;}
-    .ft-lion   {color:#f59e0b;}
-    .ft-tiger  {color:#f97316;}
-    .ft-jaguar {color:#34d399;}
-    .ft-gorilla{color:#94a3b8;}
-    .ft-croc   {color:#22c55e;}
-    .ft-falcon {color:#38bdf8;}
-    .ft-cobra  {color:#fb7185;}
+
+    .footer-tiger {
+      background: linear-gradient(to top, #1f0d05, #331508, #140803);
+    }
+
+    .footer-jaguar {
+      background: linear-gradient(to top, #04140f, #092b20, #020b08);
+    }
+
+    .footer-gorilla {
+      background: linear-gradient(to top, #111827, #1f2937, #030712);
+    }
+
+    .footer-croc {
+      background: linear-gradient(to top, #051405, #0b290b, #020802);
+    }
+
+    .footer-falcon {
+      background: linear-gradient(to top, #09152b, #13284f, #030a17);
+    }
+
+    .footer-cobra {
+      background: linear-gradient(to top, #14040a, #290916, #080205);
+    }
+
+    .vp-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      position: relative;
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, .12);
+      background: rgba(0, 0, 0, .75);
+    }
+
+    .vp-num {
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: .55rem;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .vp-label {
+      font-size: .32rem;
+      font-weight: 900;
+      color: rgba(255, 255, 255, .4);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .vp-lion {
+      box-shadow: 0 0 12px rgba(245, 158, 11, .5);
+    }
+
+    .vp-tiger {
+      box-shadow: 0 0 12px rgba(249, 115, 22, .5);
+    }
+
+    .vp-jaguar {
+      box-shadow: 0 0 12px rgba(16, 185, 129, .5);
+    }
+
+    .vp-gorilla {
+      box-shadow: 0 0 12px rgba(148, 163, 184, .4);
+    }
+
+    .vp-croc {
+      box-shadow: 0 0 12px rgba(16, 185, 129, .4);
+    }
+
+    .vp-falcon {
+      box-shadow: 0 0 12px rgba(56, 189, 248, .4);
+    }
+
+    .vp-cobra {
+      box-shadow: 0 0 12px rgba(225, 29, 72, .4);
+    }
+
+    .footer-text {
+      flex: 1;
+      text-align: right;
+    }
+
+    .footer-action {
+      font-size: .42rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+    }
+
+    .footer-desc {
+      font-size: .35rem;
+      color: rgba(255, 255, 255, .3);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-top: 1px;
+    }
+
+    .ft-lion {
+      color: #f59e0b;
+    }
+
+    .ft-tiger {
+      color: #f97316;
+    }
+
+    .ft-jaguar {
+      color: #34d399;
+    }
+
+    .ft-gorilla {
+      color: #94a3b8;
+    }
+
+    .ft-croc {
+      color: #22c55e;
+    }
+
+    .ft-falcon {
+      color: #38bdf8;
+    }
+
+    .ft-cobra {
+      color: #fb7185;
+    }
 
     /* shimmer animation */
-    @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
-    .shimmer{
-      position:absolute;inset:0;
-      background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.12) 50%,transparent 60%);
-      background-size:200% 100%;
-      animation:shimmer 4s linear infinite;
-      pointer-events:none;z-index:3;border-radius:inherit;
+    @keyframes shimmer {
+      0% {
+        background-position: -200% center
+      }
+
+      100% {
+        background-position: 200% center
+      }
+    }
+
+    .shimmer {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, .12) 50%, transparent 60%);
+      background-size: 200% 100%;
+      animation: shimmer 4s linear infinite;
+      pointer-events: none;
+      z-index: 3;
+      border-radius: inherit;
     }
   </style>
 </head>
+
 <body>
-<h1>ROAR</h1>
-<p class="subtitle">Collectible Premium Card Gallery · All 7 Animals</p>
+  <h1>ROAR</h1>
+  <p class="subtitle">Collectible Premium Card Gallery · All 7 Animals</p>
 
-<div class="grid" id="cards"></div>
+  <div class="grid" id="cards"></div>
 
-<script>
-const ANIMALS = [
-  { key:'lion',    name:'Lion',      vp:'1000', stars:5, rarity:'LEGENDARY' },
-  { key:'tiger',   name:'Tiger',     vp:'800',  stars:5, rarity:'EPIC'      },
-  { key:'jaguar',  name:'Jaguar',    vp:'600',  stars:4, rarity:'RARE'      },
-  { key:'gorilla', name:'Gorilla',   vp:'500',  stars:4, rarity:'RARE'      },
-  { key:'croc',    name:'Crocodile', vp:'400',  stars:3, rarity:'UNCOMMON'  },
-  { key:'falcon',  name:'Falcon',    vp:'300',  stars:3, rarity:'UNCOMMON'  },
-  { key:'cobra',   name:'Cobra',     vp:'200',  stars:2, rarity:'COMMON'    },
-];
+  <script>
+    const ANIMALS = [
+      { key: 'lion', name: 'Lion', vp: '1000', stars: 5, rarity: 'LEGENDARY' },
+      { key: 'tiger', name: 'Tiger', vp: '800', stars: 5, rarity: 'EPIC' },
+      { key: 'jaguar', name: 'Jaguar', vp: '600', stars: 4, rarity: 'RARE' },
+      { key: 'gorilla', name: 'Gorilla', vp: '500', stars: 4, rarity: 'RARE' },
+      { key: 'croc', name: 'Crocodile', vp: '400', stars: 3, rarity: 'UNCOMMON' },
+      { key: 'falcon', name: 'Falcon', vp: '300', stars: 3, rarity: 'UNCOMMON' },
+      { key: 'cobra', name: 'Cobra', vp: '200', stars: 2, rarity: 'COMMON' },
+    ];
 
-const ARTWORK = {
-  lion:`
+    const ARTWORK = {
+      lion: `
 <defs>
   <linearGradient id="lion-sky" x1="0%" y1="0%" x2="0%" y2="100%">
     <stop offset="0%" stop-color="#1e1b4b"/><stop offset="35%" stop-color="#4c1d95"/>
@@ -245,7 +578,7 @@ const ARTWORK = {
   <path d="M10-10L5-8" stroke="#321102" stroke-width="2.5" stroke-linecap="round"/>
 </g>`,
 
-  tiger:`
+      tiger: `
 <defs>
   <linearGradient id="tj" x1="0%" y1="0%" x2="0%" y2="100%">
     <stop offset="0%" stop-color="#022c22"/><stop offset="50%" stop-color="#064e3b"/>
@@ -283,7 +616,7 @@ const ARTWORK = {
   <circle cx="8" cy="-29" r=".8" fill="#fff"/>
 </g>`,
 
-  jaguar:`
+      jaguar: `
 <defs>
   <linearGradient id="jg" x1="0%" y1="0%" x2="0%" y2="100%">
     <stop offset="0%" stop-color="#061214"/><stop offset="60%" stop-color="#02201b"/><stop offset="100%" stop-color="#060814"/>
@@ -315,7 +648,7 @@ const ARTWORK = {
   </g>
 </g>`,
 
-  gorilla:`
+      gorilla: `
 <defs>
   <linearGradient id="gg" x1="0%" y1="0%" x2="0%" y2="100%">
     <stop offset="0%" stop-color="#0f172a"/><stop offset="60%" stop-color="#1e293b"/><stop offset="100%" stop-color="#334155"/>
@@ -343,7 +676,7 @@ const ARTWORK = {
   <path d="M45 35C58 10 50 75 35 75Z" fill="#0f172a" stroke="#334155" stroke-width="1"/>
 </g>`,
 
-  croc:`
+      croc: `
 <defs>
   <linearGradient id="cg" x1="0%" y1="0%" x2="0%" y2="100%">
     <stop offset="0%" stop-color="#021c15"/><stop offset="60%" stop-color="#064e3b"/><stop offset="100%" stop-color="#022c22"/>
@@ -376,7 +709,7 @@ const ARTWORK = {
   <path d="M145 202Q152 170 158 178" fill="none" stroke="#a7f3d0" stroke-width="2" stroke-linecap="round"/>
 </g>`,
 
-  falcon:`
+      falcon: `
 <defs>
   <linearGradient id="fsky" x1="0%" y1="0%" x2="0%" y2="100%">
     <stop offset="0%" stop-color="#0c1d3a"/><stop offset="40%" stop-color="#1e3a8a"/>
@@ -416,7 +749,7 @@ const ARTWORK = {
   <path d="M-10-2C-10-15 10-15 10-2" fill="none" stroke="#fde047" stroke-width="1" opacity=".6"/>
 </g>`,
 
-  cobra:`
+      cobra: `
 <defs>
   <linearGradient id="cbg" x1="0%" y1="0%" x2="0%" y2="100%">
     <stop offset="0%" stop-color="#1e0a15"/><stop offset="50%" stop-color="#311005"/>
@@ -456,16 +789,16 @@ const ARTWORK = {
   <circle cx="-5" cy="-7" r="1.5" fill="#22c55e" opacity=".85" filter="url(#cvglow)"/>
   <circle cx="5" cy="-9" r="1.2" fill="#22c55e" opacity=".85"/>
 </g>`
-};
+    };
 
-const STAR_SVG = `<svg viewBox="0 0 24 24" class="star"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192L12 .587z"/></svg>`;
+    const STAR_SVG = `<svg viewBox="0 0 24 24" class="star"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192L12 .587z"/></svg>`;
 
-const container = document.getElementById('cards');
-ANIMALS.forEach(a => {
-  const svg = ARTWORK[a.key];
-  const wrap = document.createElement('div');
-  wrap.className = 'card-wrap';
-  wrap.innerHTML = `
+    const container = document.getElementById('cards');
+    ANIMALS.forEach(a => {
+      const svg = ARTWORK[a.key];
+      const wrap = document.createElement('div');
+      wrap.className = 'card-wrap';
+      wrap.innerHTML = `
     <div class="frame frame-${a.key}">
       <div class="shimmer"></div>
       <div class="corner corner-tl"></div>
@@ -474,9 +807,9 @@ ANIMALS.forEach(a => {
       <div class="corner corner-br"></div>
       <div class="card-inner">
         <div class="card-header header-${a.key}">
-          <div class="stars">${Array.from({length:a.stars}).map(()=>
-            `<svg viewBox="0 0 24 24" class="star ${`star-${a.key}`}"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192L12 .587z"/></svg>`
-          ).join('')}</div>
+          <div class="stars">${Array.from({ length: a.stars }).map(() =>
+        `<svg viewBox="0 0 24 24" class="star ${`star-${a.key}`}"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192L12 .587z"/></svg>`
+      ).join('')}</div>
           <span class="name">${a.name}</span>
           <span class="rarity rarity-${a.key}">${a.rarity}</span>
         </div>
@@ -496,8 +829,9 @@ ANIMALS.forEach(a => {
         </div>
       </div>
     </div>`;
-  container.appendChild(wrap);
-});
-</script>
+      container.appendChild(wrap);
+    });
+  </script>
 </body>
+
 </html>

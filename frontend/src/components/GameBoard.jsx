@@ -4,7 +4,7 @@ import PremiumCard from './PremiumCard';
 // Ornate card border decoration
 const Decors = {
   CardBorder: () => (
-    <rect x="2" y="2" width="15" height="20" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
+    <rect x="2" y="2" width="20" height="32" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
   )
 };
 
@@ -87,212 +87,6 @@ const Avatars = {
 };
 
 const AVATAR_LIST = [Avatars.Explorer, Avatars.Warrior, Avatars.Shaman, Avatars.Sorcerer, Avatars.Bandit];
-
-// ─── HIGH-QUALITY CUSTOM ANIMAL CARD ILLUSTRATION COMPONENT ───
-const AnimalIllustrations = {
-  Falcon: () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full">
-      <defs>
-        <linearGradient id="grad-falcon-sky" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#1e3a8a" />
-          <stop offset="40%" stopColor="#3b82f6" />
-          <stop offset="100%" stopColor="#020617" />
-        </linearGradient>
-        <radialGradient id="grad-falcon-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#fef08a" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#fef08a" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <rect width="100" height="100" fill="url(#grad-falcon-sky)" />
-      <circle cx="50" cy="45" r="30" fill="url(#grad-falcon-glow)" />
-      <polygon points="-10,100 30,60 70,100" fill="#0f172a" opacity="0.8" />
-      <polygon points="30,100 70,50 110,100" fill="#020617" />
-      <line x1="50" y1="45" x2="20" y2="20" stroke="#fef08a" strokeWidth="0.5" opacity="0.3" />
-      <line x1="50" y1="45" x2="80" y2="20" stroke="#fef08a" strokeWidth="0.5" opacity="0.3" />
-      <line x1="50" y1="45" x2="50" y2="10" stroke="#fef08a" strokeWidth="0.5" opacity="0.3" />
-
-      {/* Wings spreading */}
-      <path d="M10 50 C22 20, 42 35, 50 48 C58 35, 78 20, 90 50 C78 68, 62 55, 50 62 C38 55, 22 68, 10 50 Z" fill="#e2e8f0" stroke="#475569" strokeWidth="1" />
-      <path d="M20 48 C30 32, 44 42, 50 50 C56 42, 70 32, 80 48 C70 60, 50 56, 50 56 Z" fill="#cbd5e1" />
-
-      {/* Falcon Head */}
-      <path d="M42 42 C42 32, 58 32, 58 42 L56 50 L44 50 Z" fill="#ffffff" stroke="#334155" strokeWidth="1" />
-      <path d="M47 48 L53 48 L50 60 Z" fill="#fbbf24" stroke="#ca8a04" strokeWidth="1" />
-      <polygon points="43,40 48,42 46,38" fill="#0f172a" />
-      <polygon points="57,40 52,42 54,38" fill="#0f172a" />
-      <circle cx="45" cy="41" r="1" fill="#f59e0b" />
-      <circle cx="55" cy="41" r="1" fill="#f59e0b" />
-    </svg>
-  ),
-  Lion: () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full">
-      <defs>
-        <radialGradient id="grad-lion" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#fef08a" />
-          <stop offset="70%" stopColor="#eab308" />
-          <stop offset="100%" stopColor="#713f12" />
-        </radialGradient>
-      </defs>
-      <rect width="100" height="100" fill="url(#grad-lion)" />
-      <circle cx="50" cy="50" r="36" fill="#451a03" />
-      <path d="M50 20 L58 32 L70 28 L66 40 L78 45 L68 52 L72 65 L58 60 L50 72 L42 60 L32 65 L36 52 L26 45 L38 40 L34 28 L46 32 Z" fill="#451a03" />
-      <circle cx="50" cy="48" r="18" fill="#ca8a04" />
-      <polygon points="50,56 46,50 54,50" fill="#451a03" />
-      <path d="M42 45 Q50 38 58 45" stroke="#451a03" strokeWidth="2" fill="none" />
-      <circle cx="45" cy="46" r="2" fill="#451a03" />
-      <circle cx="55" cy="46" r="2" fill="#451a03" />
-      <polygon points="40,24 50,15 60,24 54,28 46,28" fill="#fef08a" stroke="#ca8a04" strokeWidth="1" />
-    </svg>
-  ),
-  Tiger: () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full">
-      <defs>
-        <radialGradient id="grad-tiger" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ffedd5" />
-          <stop offset="75%" stopColor="#f97316" />
-          <stop offset="100%" stopColor="#7c2d12" />
-        </radialGradient>
-      </defs>
-      <rect width="100" height="100" fill="url(#grad-tiger)" />
-      <path d="M15 15 L35 30 L15 40 M85 15 L65 30 L85 40 M10 60 L30 65 L10 70 M90 60 L70 65 L90 70" stroke="#1c0702" strokeWidth="5" strokeLinecap="round" fill="none" />
-      <circle cx="50" cy="50" r="25" fill="#ea580c" stroke="#1c0702" strokeWidth="2.5" />
-      <path d="M36 36 L28 26 L40 32 Z M64 36 L72 26 L60 32 Z" fill="#1c0702" />
-      <polygon points="46,45 42,42 50,42" fill="#facc15" />
-      <polygon points="54,45 58,42 50,42" fill="#facc15" />
-      <polygon points="50,58 45,52 55,52" fill="#1c0702" />
-    </svg>
-  ),
-  Jaguar: () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full">
-      <defs>
-        <radialGradient id="grad-jaguar" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#fef9c3" />
-          <stop offset="70%" stopColor="#d97706" />
-          <stop offset="100%" stopColor="#1e1b4b" />
-        </radialGradient>
-      </defs>
-      <rect width="100" height="100" fill="url(#grad-jaguar)" />
-      <circle cx="25" cy="20" r="4" fill="#1e1b4b" stroke="#78350f" strokeWidth="2" />
-      <circle cx="75" cy="20" r="4" fill="#1e1b4b" stroke="#78350f" strokeWidth="2" />
-      <circle cx="50" cy="48" r="22" fill="#b45309" stroke="#1e1b4b" strokeWidth="2" />
-      <ellipse cx="43" cy="44" rx="4" ry="2.5" fill="#facc15" />
-      <polygon points="50,54 46,49 54,49" fill="#1e1b4b" />
-    </svg>
-  ),
-  Gorilla: () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full">
-      <defs>
-        <radialGradient id="grad-gorilla" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#94a3b8" />
-          <stop offset="70%" stopColor="#334155" />
-          <stop offset="100%" stopColor="#0f172a" />
-        </radialGradient>
-      </defs>
-      <rect width="100" height="100" fill="url(#grad-gorilla)" />
-      <path d="M30 60 C30 40, 70 40, 70 60 Z" fill="#1e293b" opacity="0.5" />
-      <circle cx="28" cy="48" r="18" fill="#1e293b" />
-      <circle cx="72" cy="48" r="18" fill="#1e293b" />
-      <rect x="36" y="24" width="28" height="28" rx="10" fill="#0f172a" stroke="#475569" strokeWidth="2.5" />
-      <path d="M43 47 Q50 44 57 47" stroke="#334155" strokeWidth="2" fill="none" />
-    </svg>
-  ),
-  Crocodile: () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full">
-      <defs>
-        <radialGradient id="grad-croc" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#a7f3d0" />
-          <stop offset="70%" stopColor="#047857" />
-          <stop offset="100%" stopColor="#022c22" />
-        </radialGradient>
-      </defs>
-      <rect width="100" height="100" fill="url(#grad-croc)" />
-      <path d="M25 45 L75 40 L70 50 Z" fill="#065f46" stroke="#022c22" strokeWidth="2" />
-      <polygon points="35,44 38,48 41,44" fill="#fff" />
-      <polygon points="45,43 48,47 51,43" fill="#fff" />
-      <circle cx="32" cy="38" r="3" fill="#fbbf24" />
-    </svg>
-  ),
-  Cobra: () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full">
-      <defs>
-        <radialGradient id="grad-cobra" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#fee2e2" />
-          <stop offset="70%" stopColor="#dc2626" />
-          <stop offset="100%" stopColor="#450a0a" />
-        </radialGradient>
-      </defs>
-      <rect width="100" height="100" fill="url(#grad-cobra)" />
-      <path d="M30 65 Q10 40 35 30 Q50 25 65 30 Q90 40 70 65 Z" fill="#991b1b" stroke="#450a0a" strokeWidth="2.5" />
-      <ellipse cx="50" cy="35" rx="14" ry="10" fill="#7f1d1d" stroke="#450a0a" strokeWidth="2" />
-      <circle cx="45" cy="35" r="2" fill="#facc15" />
-      <circle cx="55" cy="35" r="2" fill="#facc15" />
-    </svg>
-  )
-};
-
-// ─── UNIQUE TACTILE CARD ILLUSTRATIONS FOR DEEDS/MONEY ───
-const MoneyIllustrations = {
-  Wolf: () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full opacity-60">
-      <defs>
-        <radialGradient id="grad-wolf" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#451a03" />
-          <stop offset="100%" stopColor="#1e0c03" />
-        </radialGradient>
-      </defs>
-      <rect width="100" height="100" fill="url(#grad-wolf)" rx="6" />
-      <path d="M50 20 L58 35 L76 30 L66 48 L72 68 L56 62 L50 78 L44 62 L28 68 L34 48 L24 30 L42 35 Z" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="43" cy="42" r="2.5" fill="#ef4444" />
-      <circle cx="57" cy="42" r="2.5" fill="#ef4444" />
-      <path d="M47 52 Q50 48 53 52" stroke="#f59e0b" strokeWidth="1.5" fill="none" />
-      <line x1="50" y1="20" x2="50" y2="35" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="2 2" />
-    </svg>
-  ),
-  Falcon: () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full opacity-60">
-      <defs>
-        <radialGradient id="grad-falcon-mini" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#1e3a8a" />
-          <stop offset="100%" stopColor="#0f172a" />
-        </radialGradient>
-      </defs>
-      <rect width="100" height="100" fill="url(#grad-falcon-mini)" rx="6" />
-      <path d="M20 45 C35 30, 45 40, 50 48 C55 40, 65 30, 80 45 C65 55, 35 55, 20 45 Z" fill="none" stroke="#60a5fa" strokeWidth="2" />
-      <circle cx="50" cy="48" r="8" fill="none" stroke="#60a5fa" strokeWidth="1.5" />
-      <path d="M46 48 L54 48 L50 58 Z" fill="#60a5fa" />
-    </svg>
-  ),
-  Lion: () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full opacity-60">
-      <defs>
-        <radialGradient id="grad-lion-mini" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#78350f" />
-          <stop offset="100%" stopColor="#292524" />
-        </radialGradient>
-      </defs>
-      <rect width="100" height="100" fill="url(#grad-lion-mini)" rx="6" />
-      <circle cx="50" cy="50" r="22" fill="none" stroke="#fbbf24" strokeWidth="2" />
-      <path d="M38 32 Q26 24 34 38" stroke="#fbbf24" strokeWidth="1.5" fill="none" />
-      <path d="M62 32 Q74 24 66 38" stroke="#fbbf24" strokeWidth="1.5" fill="none" />
-      <polygon points="50,56 46,50 54,50" fill="#fbbf24" />
-    </svg>
-  )
-};
-
-function CardIllustration({ name }) {
-  const normalized = name ? name.charAt(0).toUpperCase() + name.slice(1).toLowerCase() : '';
-  const Component = AnimalIllustrations[normalized];
-  if (!Component) {
-    return (
-      <img
-        src={`https://source.unsplash.com/400x600/?${name?.toLowerCase() || 'animal'},animal`}
-        alt={name}
-        className="w-full h-full object-cover"
-      />
-    );
-  }
-  return <Component />;
-}
 
 // ─── Radial Opponents Seat Matrix (Placed outside the table boundary) ───
 // Dynamic opponent positioning is used instead of static coordinates.
@@ -467,7 +261,7 @@ export default function GameBoard({ room, player, socket, onLeave }) {
   };
   console.log('DP:', JSON.stringify(displayPlayers.map(p => ({ id: p.id, name: p.name, isMe: p.isMe }))), 'total:', displayPlayers.length);
   return (
-    <div className="min-h-screen h-screen w-screen flex flex-col justify-between bg-[#020308] bg-mesh font-body text-roar-text overflow-hidden select-none relative">
+    <div className="min-h-screen h-screen w-screen flex flex-col bg-[#020308] bg-mesh font-body text-roar-text overflow-hidden select-none relative">
 
       {/* ── CINEMATIC AMBIENT STADIUM GLOWS & PARTICLES ── */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(29,78,216,0.12)_0%,transparent_75%)] pointer-events-none z-0" />
@@ -504,11 +298,54 @@ export default function GameBoard({ room, player, socket, onLeave }) {
         </div>
       </header>
 
+      {/* ── TOP PLAYER ROW — sits between header and table, never overlaps ── */}
+      <div className="w-full flex-shrink-0 px-6 pt-3 pb-0 z-20 flex justify-center">
+        <div className="flex items-start justify-center gap-6 flex-wrap w-full max-w-4xl">
+          {displayPlayers.filter(p => !p.isMe).map((opp, idx, opponents) => {
+            const isTurn = currentTurnPlayer?.id === opp.id;
+            const OppAvatar = AVATAR_LIST[opp.avatarIdx % AVATAR_LIST.length];
+            return (
+              <div
+                key={opp.id}
+                className="flex flex-col items-center cursor-pointer hover:scale-105 transition-all duration-200"
+                onClick={() => handleInspectPlayer(opp.id)}
+                title={`Inspect ${opp.name}'s inventory`}
+              >
+                {/* Turn badge */}
+                <span className={`mb-1 text-[7px] font-black rounded px-1.5 py-0.5 tracking-wider uppercase whitespace-nowrap border ${isTurn
+                  ? 'bg-[#10b981]/20 text-[#10b981] border-emerald-500/40 animate-pulse'
+                  : 'bg-black/70 text-roar-muted border-white/10'
+                  }`}>
+                  {isTurn ? 'THEIR TURN' : `Waiting`}
+                </span>
+
+                {/* Avatar ring */}
+                <div className={`relative p-0.5 rounded-full transition-all duration-300 ${getAvatarGlowClass(isTurn, idx)}`}>
+                  <div className="w-14 h-14 rounded-full overflow-hidden bg-[#0d0d18] border-2 border-black/80">
+                    <OppAvatar className="w-full h-full object-cover" />
+                  </div>
+                </div>
+
+                {/* Nameplate */}
+                <div className="mt-1.5 px-2.5 py-1 bg-[#050814]/95 border border-roar-border/40 rounded shadow-2xl flex flex-col items-center min-w-[80px] backdrop-blur">
+                  <span className="text-[10px] font-black text-roar-text truncate max-w-[76px]">{opp.name}</span>
+                  <div className="flex items-center gap-1.5 mt-0.5 border-t border-white/5 pt-0.5 w-full justify-between">
+                    <span className="text-[9px] text-[#22c55e] font-black">${opp.moneyCount !== undefined ? opp.moneyCount * 10 : opp.money.reduce((a, b) => a + b, 0)}</span>
+                    <span className="text-[9px] text-amber-500 font-bold" title="Inventory Cards">🐾{opp.animalsCount}</span>
+                    <span className="text-[9px] text-roar-gold font-black">{opp.vp} VP</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* ── CENTRAL 3D GAME BOARD PERSPECTIVE ── */}
-      <main className="flex-1 w-full flex items-center justify-center p-4 z-10">
+      <main className="flex-1 w-full flex flex-col items-center justify-center px-4 pt-2 pb-0 z-10 min-h-0">
 
         {/* UNIFIED CONTAINER: Centers all poker table elements together */}
-        <div className="relative w-full max-w-4xl aspect-[2.1/1] flex items-center justify-center">
+        <div className="relative w-full max-w-4xl aspect-[2.1/1] flex items-center justify-center flex-shrink-0">
 
           {/* THE LUXURIOUS OVAL POKER TABLE SURFACE */}
           <div
@@ -538,66 +375,6 @@ export default function GameBoard({ room, player, socket, onLeave }) {
 
           {/* 2D BILLBOARD INTERACTION OVERLAY LAYER */}
           <div className="absolute inset-0 w-full h-full z-10 pointer-events-none">
-
-            {/* 1. RADIAL SEATS FOR OPPONENTS OUTSIDE TABLE */}
-            {displayPlayers.filter(p => !p.isMe).map((opp, idx, opponents) => {
-              const totalOpponents = opponents.length;
-              // Distribute left percentage evenly across the top rim (e.g., from 10% to 90%)
-              const leftPercent = totalOpponents > 1
-                ? 10 + (idx * (80 / (totalOpponents - 1)))
-                : 50;
-              const isTurn = currentTurnPlayer?.id === opp.id;
-              const OppAvatar = AVATAR_LIST[opp.avatarIdx % AVATAR_LIST.length];
-
-              return (
-                <div
-                  key={opp.id}
-                  className="absolute -top-12 transform -translate-x-1/2 pointer-events-auto cursor-pointer hover:scale-105 transition-all duration-200"
-                  style={{ left: `${leftPercent}%` }}
-                  onClick={() => handleInspectPlayer(opp.id)}
-                  title={`Inspect ${opp.name}'s inventory`}
-                >
-                  <div className="flex flex-col items-center">
-
-                    {/* Portrait Frame & Glow Ring */}
-                    <div className={`relative p-0.5 rounded-full transition-all duration-300 ${getAvatarGlowClass(isTurn, idx)}`}>
-                      {/* Active turn indicator only appears for the current user */}
-                      {opp.isMe && isTurn ? (
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#10b981] text-[#000] text-[7px] font-black rounded px-1.5 py-0.5 shadow border border-emerald-300 tracking-wider uppercase whitespace-nowrap animate-bounce">
-                          YOUR TURN
-                        </span>
-                      ) : isTurn ? (
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#10b981]/20 text-[#10b981] text-[7px] font-black rounded px-1.5 py-0.5 border border-emerald-500/40 tracking-wider uppercase whitespace-nowrap">
-                          THEIR TURN
-                        </span>
-                      ) : (
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-black/70 text-roar-muted text-[7px] font-black rounded px-1.5 py-0.5 border border-white/10 tracking-wider uppercase whitespace-nowrap">
-                          Waiting for {currentTurnPlayerName}
-                        </span>
-                      )}
-
-                      <div className="w-16 h-16 rounded-full overflow-hidden bg-[#0d0d18] border-2 border-black/80">
-                        <OppAvatar className="w-full h-full object-cover" />
-                      </div>
-                    </div>
-
-                    {/* Nameplate Dashboard */}
-                    <div className="mt-2 px-3 py-1 bg-[#050814]/95 border border-roar-border/40 rounded shadow-2xl flex flex-col items-center min-w-[85px] backdrop-blur">
-                      <span className="text-[10px] font-black text-roar-text truncate max-w-[80px]">
-                        {opp.name}
-                      </span>
-
-                      <div className="flex items-center gap-1.5 mt-0.5 border-t border-white/5 pt-0.5 w-full justify-between">
-                        <span className="text-[9px] text-[#22c55e] font-black">${opp.moneyCount !== undefined ? opp.moneyCount * 10 : opp.money.reduce((a, b) => a + b, 0)}</span>
-                        <span className="text-[9px] text-amber-500 font-bold" title="Inventory Cards">🐾{opp.animalsCount}</span>
-                        <span className="text-[9px] text-roar-gold font-black">{opp.vp} VP</span>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              );
-            })}
 
             {/* 2. CENTRAL TABLETOP VOID (Deck and revealed card) */}
             <div
@@ -654,69 +431,19 @@ export default function GameBoard({ room, player, socket, onLeave }) {
 
             </div>
 
-            {room?.activePhase === 'CHOOSE_ACTION' && room?.currentRevealedCard && (
-              isMyTurn ? (
-                /* ── ACTIVE PLAYER: Choice buttons ── */
-                <div className="absolute bottom-[-4%] left-1/2 -translate-x-1/2 w-full max-w-sm pointer-events-auto z-30">
-                  {/* Glowing card reveal header */}
-                  <div className="mb-3 text-center">
-                    <span className="inline-block text-[9px] font-black uppercase tracking-[0.25em] text-roar-gold/70 border border-roar-gold/20 bg-roar-gold/5 px-3 py-1 rounded-full">
-                      You drew&nbsp;
-                      <span className="text-roar-gold">{room.currentRevealedCard.name}</span>
-                      &nbsp;·&nbsp;{room.currentRevealedCard.vp} VP
-                    </span>
-                  </div>
-
-                  {/* Choice button row */}
-                  <div className="flex items-stretch gap-3">
-
-                    {/* KEEP CARD */}
-                    <button
-                      id="action-keep-card-btn"
-                      onClick={() => chooseAction('keep-card')}
-                      className="group flex-1 flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 border-emerald-500/50 bg-emerald-950/40 hover:bg-emerald-900/50 hover:border-emerald-400 hover:shadow-[0_0_18px_rgba(16,185,129,0.4)] transition-all duration-200 active:scale-95 backdrop-blur"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      <span className="text-[10px] font-black text-emerald-300 uppercase tracking-widest">Keep Card</span>
-                      <span className="text-[8px] text-emerald-500/70 font-semibold">End turn</span>
-                    </button>
-
-                    {/* TRADE CARD */}
-                    <button
-                      id="action-initiate-trade-btn"
-                      onClick={() => chooseAction('initiate-trade')}
-                      className="group flex-1 flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 border-[#d4a017]/50 bg-[#d4a017]/5 hover:bg-[#d4a017]/15 hover:border-roar-gold hover:shadow-[0_0_18px_rgba(212,160,23,0.4)] transition-all duration-200 active:scale-95 backdrop-blur"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5 text-roar-gold group-hover:scale-110 transition-transform">
-                        <polyline points="16 3 21 8 16 13" />
-                        <line x1="21" y1="8" x2="9" y2="8" />
-                        <polyline points="8 21 3 16 8 11" />
-                        <line x1="3" y1="16" x2="15" y2="16" />
-                      </svg>
-                      <span className="text-[10px] font-black text-roar-gold uppercase tracking-widest">Trade Card</span>
-                      <span className="text-[8px] text-roar-gold/50 font-semibold">Initiate auction</span>
-                    </button>
-
+            {room?.activePhase === 'CHOOSE_ACTION' && room?.currentRevealedCard && !isMyTurn && (
+              /* ── ALL OTHER PLAYERS: Passive waiting marquee (stays inside table area) ── */
+              <div className="absolute bottom-[2%] left-1/2 -translate-x-1/2 w-full max-w-sm pointer-events-none z-30 overflow-hidden">
+                <div className="bg-[#040815]/90 border border-roar-gold/25 rounded-lg py-2 px-4 flex items-center gap-3 shadow-[0_0_20px_rgba(0,0,0,0.8)] backdrop-blur">
+                  <span className="flex-shrink-0 w-2 h-2 rounded-full bg-roar-gold animate-pulse" />
+                  <div className="overflow-hidden flex-1">
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-roar-gold/80 whitespace-nowrap animate-[marquee_10s_linear_infinite]">
+                      Waiting for {currentTurnPlayerName} to choose a move…&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
+                      Waiting for {currentTurnPlayerName} to choose a move…
+                    </p>
                   </div>
                 </div>
-              ) : (
-                /* ── ALL OTHER PLAYERS: Passive waiting marquee ── */
-                <div className="absolute bottom-[-2%] left-1/2 -translate-x-1/2 w-full max-w-sm pointer-events-none z-30 overflow-hidden">
-                  <div className="bg-[#040815]/90 border border-roar-gold/25 rounded-lg py-2 px-4 flex items-center gap-3 shadow-[0_0_20px_rgba(0,0,0,0.8)] backdrop-blur">
-                    {/* Pulsing dot */}
-                    <span className="flex-shrink-0 w-2 h-2 rounded-full bg-roar-gold animate-pulse" />
-                    {/* Scrolling marquee text */}
-                    <div className="overflow-hidden flex-1">
-                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-roar-gold/80 whitespace-nowrap animate-[marquee_10s_linear_infinite]">
-                        Waiting for {currentTurnPlayerName} to choose a move…&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
-                        Waiting for {currentTurnPlayerName} to choose a move…
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )
+              </div>
             )}
 
             {/* 4. HIGH-END ACTIVE BIDDING CONTROL PANEL — only during AUCTION phase */}
@@ -802,8 +529,8 @@ export default function GameBoard({ room, player, socket, onLeave }) {
                           onClick={placeBid}
                           disabled={!hasEnoughCashForBid}
                           className={`font-display font-black text-[10px] px-4 py-2.5 rounded-lg uppercase tracking-wider border shadow transition-all duration-200 active:scale-95 ${hasEnoughCashForBid
-                              ? 'bg-gradient-to-r from-roar-gold to-roar-gold-light hover:from-[#eab308] hover:to-[#fef08a] text-black border-yellow-200/50 shadow-glow-gold hover:shadow-[0_0_20px_rgba(212,160,23,0.6)] cursor-pointer'
-                              : 'bg-white/5 border-white/10 text-roar-muted cursor-not-allowed opacity-50'
+                            ? 'bg-gradient-to-r from-roar-gold to-roar-gold-light hover:from-[#eab308] hover:to-[#fef08a] text-black border-yellow-200/50 shadow-glow-gold hover:shadow-[0_0_20px_rgba(212,160,23,0.6)] cursor-pointer'
+                            : 'bg-white/5 border-white/10 text-roar-muted cursor-not-allowed opacity-50'
                             }`}
                           title={!hasEnoughCashForBid ? 'Insufficient cash to bid' : `Bid $${nextBidAmount}`}
                         >
@@ -825,6 +552,49 @@ export default function GameBoard({ room, player, socket, onLeave }) {
           </div>
 
         </div>
+
+        {/* ── CHOOSE ACTION PANEL — below the table, never overlapping ── */}
+        {room?.activePhase === 'CHOOSE_ACTION' && room?.currentRevealedCard && isMyTurn && (
+          <div className="w-full max-w-sm mt-3 flex-shrink-0 pointer-events-auto z-30">
+            {/* Card name banner */}
+            <div className="mb-2 text-center">
+              <span className="inline-block text-[9px] font-black uppercase tracking-[0.25em] text-roar-gold/70 border border-roar-gold/20 bg-roar-gold/5 px-3 py-1 rounded-full">
+                You drew&nbsp;
+                <span className="text-roar-gold">{room.currentRevealedCard.name}</span>
+                &nbsp;·&nbsp;{room.currentRevealedCard.vp} VP
+              </span>
+            </div>
+            {/* Action buttons */}
+            <div className="flex items-stretch gap-3">
+              <button
+                id="action-keep-card-btn"
+                onClick={() => chooseAction('keep-card')}
+                className="group flex-1 flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 border-emerald-500/50 bg-emerald-950/40 hover:bg-emerald-900/50 hover:border-emerald-400 hover:shadow-[0_0_18px_rgba(16,185,129,0.4)] transition-all duration-200 active:scale-95 backdrop-blur"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span className="text-[10px] font-black text-emerald-300 uppercase tracking-widest">Keep Card</span>
+                <span className="text-[8px] text-emerald-500/70 font-semibold">End turn</span>
+              </button>
+
+              <button
+                id="action-initiate-trade-btn"
+                onClick={() => chooseAction('initiate-trade')}
+                className="group flex-1 flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 border-[#d4a017]/50 bg-[#d4a017]/5 hover:bg-[#d4a017]/15 hover:border-roar-gold hover:shadow-[0_0_18px_rgba(212,160,23,0.4)] transition-all duration-200 active:scale-95 backdrop-blur"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5 text-roar-gold group-hover:scale-110 transition-transform">
+                  <polyline points="16 3 21 8 16 13" />
+                  <line x1="21" y1="8" x2="9" y2="8" />
+                  <polyline points="8 21 3 16 8 11" />
+                  <line x1="3" y1="16" x2="15" y2="16" />
+                </svg>
+                <span className="text-[10px] font-black text-roar-gold uppercase tracking-widest">Trade Card</span>
+                <span className="text-[8px] text-roar-gold/50 font-semibold">Initiate auction</span>
+              </button>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* ── BOTTOM PRIVATE HUD (Fanned hand widely spread) ── */}

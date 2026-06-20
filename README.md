@@ -32,15 +32,15 @@
 
 ## Card Artwork Themes
 
-      | Animal | Rarity | Scene |
-      | :--- | :--- | :--- |
-      | 🦁 **Lion** | LEGENDARY ⭐⭐⭐⭐⭐ | Savannah sunset, golden backlit mane, Pride Rock |
-      | 🐯 **Tiger** | EPIC ⭐⭐⭐⭐⭐ | Dense jungle, orange energy vortex, lunging paws |
-      | 🐆 **Jaguar** | RARE ⭐⭐⭐⭐ | Midnight rainforest, glowing green predator eyes, mist |
-      | 🦍 **Gorilla** | RARE ⭐⭐⭐⭐ | Ancient ruins, stone pillars, atmospheric fog |
-      | 🐊 **Crocodile** | UNCOMMON ⭐⭐⭐ | Emerald swamp, ripple water, splash effects |
-      | 🦅 **Falcon** | UNCOMMON ⭐⭐⭐ | Mountain sunrise, golden rays, snow-capped peaks |
-      | 🐍 **Cobra** | COMMON ⭐⭐ | Desert temple, red venom glow, intimidating hood flare |
+| Animal | Rarity | Scene |
+| :--- | :--- | :--- |
+| 🦁 **Lion** | LEGENDARY ⭐⭐⭐⭐⭐ | Savannah sunset, golden backlit mane, Pride Rock |
+| 🐯 **Tiger** | EPIC ⭐⭐⭐⭐⭐ | Dense jungle, orange energy vortex, lunging paws |
+| 🐆 **Jaguar** | RARE ⭐⭐⭐⭐ | Midnight rainforest, glowing green predator eyes, mist |
+| 🦍 **Gorilla** | RARE ⭐⭐⭐⭐ | Ancient ruins, stone pillars, atmospheric fog |
+| 🐊 **Crocodile** | UNCOMMON ⭐⭐⭐ | Emerald swamp, ripple water, splash effects |
+| 🦅 **Falcon** | UNCOMMON ⭐⭐⭐ | Mountain sunrise, golden rays, snow-capped peaks |
+| 🐍 **Cobra** | COMMON ⭐⭐ | Desert temple, red venom glow, intimidating hood flare |
 
 ##  Engine Features & Core Architecture
 
