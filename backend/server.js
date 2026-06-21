@@ -194,7 +194,7 @@ function checkAuctionResolution(room, roomCode) {
     } else {
       const winner = room.players.find((p) => p.id === room.highestBidder);
       const seller = room.players.find((p) => p.id === room.drawerId);
-      const card   = room.currentRevealedCard;
+      const card = room.currentRevealedCard;
       const salePrice = room.currentBid;
 
       if (winner && seller && card) {
@@ -217,7 +217,7 @@ function checkAuctionResolution(room, roomCode) {
 
     room.currentRevealedCard = null;
     room.drawerId = null;
-    room.activePhase = 'CHOOSE_ACTION'; // Transition back to CHOOSE_ACTION
+    room.activePhase = room.deck.length > 0 ? 'DRAW' : 'DUEL_TARGET_SELECTION';
     room.currentBid = 0;
     room.highestBidder = null;
     room.passedPlayers = [];
@@ -464,7 +464,7 @@ io.on('connection', (socket) => {
 
       room.currentRevealedCard = null;
       room.drawerId = null;
-      room.activePhase = 'DRAW';
+      room.activePhase = room.deck.length > 0 ? 'DRAW' : 'DUEL_TARGET_SELECTION';
       room.currentTurnIndex = nextIdx;
 
       addRoomLog(room, `${currentPlayer.name} kept ${keptCardName}.`, 'system');
@@ -531,7 +531,7 @@ io.on('connection', (socket) => {
     room.highestBidder = socket.id;
     addRoomLog(room, `${bidderRecord.name} bids $${nextBid}`, 'bid');
     console.log(`[ROAR] ✦ Room ${roomCode}: "${bidderRecord.name}" bids $${nextBid}`);
-    
+
     // Check if the new bid immediately auto-passes everyone else and resolves the auction
     checkAuctionResolution(room, roomCode);
   });
@@ -562,6 +562,170 @@ io.on('connection', (socket) => {
 
     // Check resolution
     checkAuctionResolution(room, roomCode);
+  });
+
+  // ── initiate-duel ─────────────────────────────────────────────────────────
+  socket.on('initiate-duel', ({ targetPlayerId, animalName, cardCount }) => {
+    const roomCode = socket.data.roomCode;
+    const room = roomCode && rooms[roomCode];
+    if (!room || room.status !== 'PLAYING') return;
+
+    if (room.activePhase !== 'DUEL_TARGET_SELECTION') {
+      socket.emit('roar-error', { message: 'Not in duel selection phase.' });
+      return;
+    }
+
+    const currentPlayer = room.players[room.currentTurnIndex];
+    if (!currentPlayer || currentPlayer.id !== socket.id) {
+      socket.emit('roar-error', { message: 'Only active player can initiate a duel.' });
+      return;
+    }
+
+    if (targetPlayerId === socket.id) {
+      socket.emit('roar-error', { message: 'Cannot duel yourself.' });
+      return;
+    }
+
+    const targetPlayer = room.players.find((p) => p.id === targetPlayerId);
+    if (!targetPlayer) return;
+
+    const challengerAnimals = currentPlayer.animals.filter(a => a.name === animalName);
+    const defenderAnimals = targetPlayer.animals.filter(a => a.name === animalName);
+
+    if (challengerAnimals.length < cardCount || defenderAnimals.length < cardCount) {
+      socket.emit('roar-error', { message: 'Both players must own the specified quantity of the chosen animal.' });
+      return;
+    }
+
+    room.duel = {
+      challengerId: socket.id,
+      defenderId: targetPlayerId,
+      animalName,
+      cardCount,
+      challengerOffer: null,
+      defenderOffer: null
+    };
+
+    room.activePhase = 'DUEL_BIDDING';
+    addRoomLog(room, `${currentPlayer.name} challenged ${targetPlayer.name} to a duel for ${cardCount} ${animalName}(s)!`, 'system');
+    broadcastRoom(roomCode);
+  });
+
+  // ── commit-duel-offer ─────────────────────────────────────────────────────
+  socket.on('commit-duel-offer', ({ offerSubset }) => {
+    const roomCode = socket.data.roomCode;
+    const room = roomCode && rooms[roomCode];
+    if (!room || room.status !== 'PLAYING') return;
+
+    if (room.activePhase !== 'DUEL_BIDDING' || !room.duel) return;
+
+    const isChallenger = socket.id === room.duel.challengerId;
+    const isDefender = socket.id === room.duel.defenderId;
+    if (!isChallenger && !isDefender) return;
+
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player) return;
+
+    // Remove the offered money from the player's physical money array temporarily
+    const offerValues = Array.isArray(offerSubset) ? offerSubset : [];
+    const tempMoney = [...player.money];
+    let valid = true;
+    for (const val of offerValues) {
+      const idx = tempMoney.indexOf(val);
+      if (idx !== -1) {
+        tempMoney.splice(idx, 1);
+      } else {
+        valid = false;
+        break;
+      }
+    }
+
+    if (!valid) {
+      socket.emit('roar-error', { message: 'Invalid offer stack. Cards not in inventory.' });
+      return;
+    }
+
+    player.money = tempMoney; // deduct temporarily
+    if (isChallenger) room.duel.challengerOffer = offerValues;
+    if (isDefender) room.duel.defenderOffer = offerValues;
+
+    addRoomLog(room, `${player.name} committed their duel offer.`, 'system');
+
+    // Check if both submitted
+    if (room.duel.challengerOffer !== null && room.duel.defenderOffer !== null) {
+      const challengerTotal = room.duel.challengerOffer.reduce((a,b) => a+b, 0);
+      const defenderTotal = room.duel.defenderOffer.reduce((a,b) => a+b, 0);
+
+      const challenger = room.players.find(p => p.id === room.duel.challengerId);
+      const defender = room.players.find(p => p.id === room.duel.defenderId);
+
+      if (challengerTotal === defenderTotal) {
+        // TIE
+        addRoomLog(room, `Duel tied at $${challengerTotal}! Challenger must re-bid.`, 'system');
+        // Return money to hands
+        challenger.money.push(...room.duel.challengerOffer);
+        defender.money.push(...room.duel.defenderOffer);
+        // Reset offers
+        room.duel.challengerOffer = null;
+        room.duel.defenderOffer = null;
+      } else {
+        // Winner takes all
+        const winner = challengerTotal > defenderTotal ? challenger : defender;
+        const loser = challengerTotal > defenderTotal ? defender : challenger;
+        const winnerOffer = challengerTotal > defenderTotal ? room.duel.challengerOffer : room.duel.defenderOffer;
+        const loserOffer = challengerTotal > defenderTotal ? room.duel.defenderOffer : room.duel.challengerOffer;
+
+        // Loser gets their offer back AND gets the winner's offer
+        loser.money.push(...loserOffer, ...winnerOffer);
+
+        // Winner gets the cards
+        const transferredCards = [];
+        const loserRemainingAnimals = [];
+        let count = room.duel.cardCount;
+        for (const animal of loser.animals) {
+          if (animal.name === room.duel.animalName && count > 0) {
+            transferredCards.push(animal);
+            loser.vp = Math.max(0, (loser.vp || 0) - animal.vp);
+            count--;
+          } else {
+            loserRemainingAnimals.push(animal);
+          }
+        }
+        loser.animals = loserRemainingAnimals;
+
+        if (!Array.isArray(winner.animals)) winner.animals = [];
+        winner.animals.push(...transferredCards);
+        for (const c of transferredCards) {
+          winner.vp = (winner.vp || 0) + c.vp;
+        }
+
+        addRoomLog(room, `${winner.name} won the duel ($${Math.max(challengerTotal, defenderTotal)} vs $${Math.min(challengerTotal, defenderTotal)}) and claimed ${room.duel.cardCount} ${room.duel.animalName}(s)!`, 'bid');
+
+        // End duel, pass turn
+        room.duel = null;
+        room.activePhase = room.deck.length > 0 ? 'DRAW' : 'DUEL_TARGET_SELECTION';
+        room.currentTurnIndex = (room.currentTurnIndex + 1) % room.players.length;
+      }
+    }
+
+    broadcastRoom(roomCode);
+  });
+
+  // ── pass-duel ─────────────────────────────────────────────────────────────
+  socket.on('pass-duel', () => {
+    const roomCode = socket.data.roomCode;
+    const room = roomCode && rooms[roomCode];
+    if (!room || room.status !== 'PLAYING') return;
+
+    if (room.activePhase !== 'DUEL_TARGET_SELECTION') return;
+
+    const currentPlayer = room.players[room.currentTurnIndex];
+    if (!currentPlayer || currentPlayer.id !== socket.id) return;
+
+    addRoomLog(room, `${currentPlayer.name} passed their duel turn.`, 'system');
+    room.currentTurnIndex = (room.currentTurnIndex + 1) % room.players.length;
+    room.activePhase = room.deck.length > 0 ? 'DRAW' : 'DUEL_TARGET_SELECTION';
+    broadcastRoom(roomCode);
   });
 
   // ── disconnect ───────────────────────────────────────────────────────────────

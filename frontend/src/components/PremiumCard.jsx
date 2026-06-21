@@ -1,36 +1,34 @@
 import { useState } from 'react';
 
 // ─── Animal image imports ───────────────────────────────────────────────────
-import falconImage  from '../assets/animals/falcon.webp';
-import lionImage    from '../assets/animals/lion.webp';
-import tigerImage   from '../assets/animals/tiger.webp';
-import jaguarImage  from '../assets/animals/jaguar.webp';
+import falconImage from '../assets/animals/falcon.webp';
+import lionImage from '../assets/animals/lion.webp';
+import tigerImage from '../assets/animals/tiger.webp';
+import jaguarImage from '../assets/animals/jaguar.webp';
 import gorillaImage from '../assets/animals/gorilla.webp';
 import crocodileImage from '../assets/animals/crocodile.webp';
-import cobraImage   from '../assets/animals/cobra.webp';
+import cobraImage from '../assets/animals/cobra.webp';
 
-// Centralised name → image mapping (case-insensitive via lookup below)
-const ANIMAL_IMAGES = {
-  falcon:    falconImage,
-  lion:      lionImage,
-  tiger:     tigerImage,
-  jaguar:    jaguarImage,
-  gorilla:   gorillaImage,
+export const ANIMAL_IMAGES = {
+  falcon: falconImage,
+  lion: lionImage,
+  tiger: tigerImage,
+  jaguar: jaguarImage,
+  gorilla: gorillaImage,
   crocodile: crocodileImage,
-  cobra:     cobraImage,
+  cobra: cobraImage,
 };
 
-// Theme configuration for the 7 animal cards
 export const ANIMAL_THEMES = {
   lion: {
     borderGradient: 'from-amber-400 via-yellow-600 to-amber-800',
     headerBg: 'bg-gradient-to-r from-amber-900/90 to-yellow-800/90',
     footerBg: 'bg-gradient-to-t from-[#1a0f05] via-[#291708] to-[#120a03]',
-    glowClass: 'shadow-[0_0_30px_rgba(245,158,11,0.45)]',
+    glowClass: 'shadow-[0_0_40px_rgba(245,158,11,0.55)]',
     accentText: 'text-amber-400',
     accentBorder: 'border-amber-500/50',
     badgeBg: 'bg-gradient-to-br from-amber-500 to-yellow-600',
-    badgeGlow: 'shadow-[0_0_15px_rgba(234,179,8,0.5)]',
+    badgeGlow: 'shadow-[0_0_20px_rgba(234,179,8,0.6)]',
     stars: 5,
     rarityName: 'LEGENDARY',
     rarityColor: 'text-amber-400 text-glow-gold',
@@ -41,11 +39,11 @@ export const ANIMAL_THEMES = {
     borderGradient: 'from-orange-500 via-red-500 to-orange-800',
     headerBg: 'bg-gradient-to-r from-orange-950/90 to-red-950/90',
     footerBg: 'bg-gradient-to-t from-[#1f0d05] via-[#331508] to-[#140803]',
-    glowClass: 'shadow-[0_0_30px_rgba(249,115,22,0.45)]',
+    glowClass: 'shadow-[0_0_40px_rgba(249,115,22,0.55)]',
     accentText: 'text-orange-400',
     accentBorder: 'border-orange-500/50',
     badgeBg: 'bg-gradient-to-br from-orange-500 to-red-600',
-    badgeGlow: 'shadow-[0_0_15px_rgba(249,115,22,0.5)]',
+    badgeGlow: 'shadow-[0_0_20px_rgba(249,115,22,0.6)]',
     stars: 5,
     rarityName: 'EPIC',
     rarityColor: 'text-orange-400',
@@ -56,13 +54,13 @@ export const ANIMAL_THEMES = {
     borderGradient: 'from-emerald-400 via-teal-600 to-emerald-950',
     headerBg: 'bg-gradient-to-r from-emerald-950/90 to-teal-950/90',
     footerBg: 'bg-gradient-to-t from-[#04140f] via-[#092b20] to-[#020b08]',
-    glowClass: 'shadow-[0_0_30px_rgba(16,185,129,0.4)]',
+    glowClass: 'shadow-[0_0_40px_rgba(16,185,129,0.5)]',
     accentText: 'text-emerald-400',
     accentBorder: 'border-emerald-500/50',
     badgeBg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
-    badgeGlow: 'shadow-[0_0_15px_rgba(16,185,129,0.5)]',
-    stars: 4,
-    rarityName: 'RARE',
+    badgeGlow: 'shadow-[0_0_20px_rgba(16,185,129,0.6)]',
+    stars: 3,
+    rarityName: 'UNCOMMON',
     rarityColor: 'text-emerald-400',
     overlayFrom: 'rgba(4,47,31,0.15)',
     overlayTo: 'rgba(0,8,4,0.85)',
@@ -71,11 +69,11 @@ export const ANIMAL_THEMES = {
     borderGradient: 'from-slate-400 via-zinc-600 to-slate-800',
     headerBg: 'bg-gradient-to-r from-slate-900/90 to-zinc-800/90',
     footerBg: 'bg-gradient-to-t from-[#111827] via-[#1f2937] to-[#030712]',
-    glowClass: 'shadow-[0_0_30px_rgba(156,163,175,0.35)]',
+    glowClass: 'shadow-[0_0_40px_rgba(156,163,175,0.45)]',
     accentText: 'text-slate-300',
     accentBorder: 'border-slate-500/40',
     badgeBg: 'bg-gradient-to-br from-slate-400 to-zinc-600',
-    badgeGlow: 'shadow-[0_0_15px_rgba(156,163,175,0.4)]',
+    badgeGlow: 'shadow-[0_0_20px_rgba(156,163,175,0.5)]',
     stars: 4,
     rarityName: 'RARE',
     rarityColor: 'text-slate-300',
@@ -86,11 +84,11 @@ export const ANIMAL_THEMES = {
     borderGradient: 'from-green-500 via-emerald-700 to-emerald-900',
     headerBg: 'bg-gradient-to-r from-green-950/90 to-emerald-950/90',
     footerBg: 'bg-gradient-to-t from-[#051405] via-[#0b290b] to-[#020802]',
-    glowClass: 'shadow-[0_0_30px_rgba(16,185,129,0.3)]',
+    glowClass: 'shadow-[0_0_40px_rgba(16,185,129,0.4)]',
     accentText: 'text-emerald-500',
     accentBorder: 'border-emerald-600/40',
     badgeBg: 'bg-gradient-to-br from-green-500 to-emerald-600',
-    badgeGlow: 'shadow-[0_0_15px_rgba(16,185,129,0.4)]',
+    badgeGlow: 'shadow-[0_0_20px_rgba(16,185,129,0.5)]',
     stars: 3,
     rarityName: 'UNCOMMON',
     rarityColor: 'text-emerald-500',
@@ -101,11 +99,11 @@ export const ANIMAL_THEMES = {
     borderGradient: 'from-sky-400 via-amber-500 to-sky-700',
     headerBg: 'bg-gradient-to-r from-sky-950/90 to-indigo-950/90',
     footerBg: 'bg-gradient-to-t from-[#09152b] via-[#13284f] to-[#030a17]',
-    glowClass: 'shadow-[0_0_30px_rgba(56,189,248,0.35)]',
+    glowClass: 'shadow-[0_0_40px_rgba(56,189,248,0.45)]',
     accentText: 'text-sky-300',
     accentBorder: 'border-sky-500/40',
     badgeBg: 'bg-gradient-to-br from-sky-400 to-amber-500',
-    badgeGlow: 'shadow-[0_0_15px_rgba(56,189,248,0.4)]',
+    badgeGlow: 'shadow-[0_0_20px_rgba(56,189,248,0.5)]',
     stars: 3,
     rarityName: 'UNCOMMON',
     rarityColor: 'text-sky-300',
@@ -116,11 +114,11 @@ export const ANIMAL_THEMES = {
     borderGradient: 'from-rose-500 via-red-700 to-rose-950',
     headerBg: 'bg-gradient-to-r from-rose-950/90 to-red-950/90',
     footerBg: 'bg-gradient-to-t from-[#14040a] via-[#290916] to-[#080205]',
-    glowClass: 'shadow-[0_0_30px_rgba(225,29,72,0.35)]',
+    glowClass: 'shadow-[0_0_40px_rgba(225,29,72,0.45)]',
     accentText: 'text-rose-400',
     accentBorder: 'border-rose-500/40',
     badgeBg: 'bg-gradient-to-br from-rose-500 to-red-700',
-    badgeGlow: 'shadow-[0_0_15px_rgba(225,29,72,0.4)]',
+    badgeGlow: 'shadow-[0_0_20px_rgba(225,29,72,0.5)]',
     stars: 2,
     rarityName: 'COMMON',
     rarityColor: 'text-rose-400',
@@ -151,33 +149,25 @@ export function getAnimalTheme(name) {
   return ANIMAL_THEMES[key] || DEFAULT_THEME;
 }
 
-// ─── CARD FRAME COMPONENT ───────────────────────────────────────────────────
+// ─── CARD FRAME ─────────────────────────────────────────────────────────────
 export function CardFrame({ name, children, isHovered }) {
   const theme = getAnimalTheme(name);
-
   return (
     <div
       className={`relative w-full h-full rounded-2xl p-[3px] bg-gradient-to-b ${theme.borderGradient} ${theme.glowClass} transition-all duration-300 overflow-hidden`}
     >
-      {/* Glossy Metallic Highlights */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.18)_0%,transparent_60%)] pointer-events-none z-10" />
       <div className="absolute inset-[1px] bg-gradient-to-tr from-black/60 via-transparent to-white/10 rounded-2xl pointer-events-none z-10" />
-
-      {/* Luxury Corner Brackets */}
+      {/* Corner brackets */}
       <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t-2 border-l-2 border-white/40 pointer-events-none z-[15]" />
       <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-2 border-r-2 border-white/40 pointer-events-none z-[15]" />
       <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-2 border-l-2 border-white/40 pointer-events-none z-[15]" />
       <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-2 border-r-2 border-white/40 pointer-events-none z-[15]" />
-
-      {/* Holographic Shimmer */}
+      {/* Holographic shimmer */}
       <div
-        className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent bg-[length:200%_100%] bg-no-repeat pointer-events-none z-20 transition-all duration-1000 ${
-          isHovered ? 'animate-shimmer opacity-100' : 'opacity-40 animate-[shimmer_5s_infinite_linear]'
-        }`}
-        style={{ backgroundPosition: isHovered ? '200% center' : undefined }}
+        className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent bg-[length:200%_100%] bg-no-repeat pointer-events-none z-20 transition-all duration-1000 ${isHovered ? 'animate-shimmer opacity-100' : 'opacity-40 animate-[shimmer_5s_infinite_linear]'
+          }`}
       />
-
-      {/* Inner card shell */}
       <div className="relative w-full h-full rounded-xl overflow-hidden flex flex-col bg-black select-none">
         {children}
       </div>
@@ -185,7 +175,7 @@ export function CardFrame({ name, children, isHovered }) {
   );
 }
 
-// ─── CARD ARTWORK COMPONENT — real images ──────────────────────────────────
+// ─── CARD ARTWORK ────────────────────────────────────────────────────────────
 export function CardArtwork({ name }) {
   const key = name ? name.toLowerCase() : '';
   const src = ANIMAL_IMAGES[key];
@@ -201,16 +191,11 @@ export function CardArtwork({ name }) {
           draggable={false}
         />
       ) : (
-        /* Fallback for any unknown animal */
-        <div
-          className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#1b1c30] to-[#070814] text-slate-500"
-        >
+        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#1b1c30] to-[#070814] text-slate-500">
           <span className="text-4xl mb-2">🐾</span>
           <span className="text-xs font-black uppercase tracking-widest">{name}</span>
         </div>
       )}
-
-      {/* Premium cinematic overlay — top faint, mid clear, bottom dark gradient */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -221,78 +206,59 @@ export function CardArtwork({ name }) {
   );
 }
 
-// ─── CARD HEADER COMPONENT ──────────────────────────────────────────────────
+// ─── CARD HEADER ─────────────────────────────────────────────────────────────
 export function CardHeader({ name }) {
   const theme = getAnimalTheme(name);
-
   return (
     <div
-      className={`relative flex-shrink-0 px-3 py-2 ${theme.headerBg} border-b ${theme.accentBorder} flex items-center justify-between z-20 shadow-[0_2px_10px_rgba(0,0,0,0.6)]`}
+      className={`relative flex-shrink-0 px-3 py-2.5 ${theme.headerBg} border-b ${theme.accentBorder} flex items-center justify-between z-20 shadow-[0_2px_10px_rgba(0,0,0,0.6)]`}
     >
-      {/* Glossy top highlight */}
       <div className="absolute inset-x-0 top-0 h-[1px] bg-white/20 pointer-events-none" />
-
-      {/* Rarity stars */}
+      {/* Stars */}
       <div className="flex items-center gap-0.5">
         {Array.from({ length: theme.stars }).map((_, i) => (
-          <svg key={i} viewBox="0 0 24 24" fill="currentColor" className={`w-2.5 h-2.5 ${theme.accentText} drop-shadow-[0_0_2px_rgba(255,255,255,0.4)]`}>
+          <svg key={i} viewBox="0 0 24 24" fill="currentColor" className={`w-3 h-3 ${theme.accentText} drop-shadow-[0_0_2px_rgba(255,255,255,0.4)]`}>
             <path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192L12 .587z" />
           </svg>
         ))}
       </div>
-
-      {/* Animal name */}
-      <span className="font-display font-black text-[11px] tracking-[0.18em] text-white uppercase text-glow-gold">
+      {/* Name */}
+      <span className="font-display font-black text-[13px] tracking-[0.15em] text-white uppercase text-glow-gold">
         {name}
       </span>
-
-      {/* Rarity badge */}
-      <span className={`text-[6.5px] font-black tracking-widest uppercase px-1.5 py-0.5 bg-black/60 rounded border ${theme.accentBorder} ${theme.accentText}`}>
+      {/* Rarity */}
+      <span className={`text-[7px] font-black tracking-widest uppercase px-1.5 py-0.5 bg-black/60 rounded border ${theme.accentBorder} ${theme.accentText}`}>
         {theme.rarityName}
       </span>
     </div>
   );
 }
 
-// ─── CARD FOOTER COMPONENT ──────────────────────────────────────────────────
+// ─── CARD FOOTER (VP BADGE) ──────────────────────────────────────────────────
 export function CardFooter({ name, vp }) {
   const theme = getAnimalTheme(name);
-
   return (
-    <div
-      className={`relative flex-shrink-0 ${theme.footerBg} border-t ${theme.accentBorder} p-2 z-20 flex flex-col justify-center min-h-[50px] shadow-[0_-2px_10px_rgba(0,0,0,0.7)]`}
-    >
-      <div className="flex items-center justify-between w-full">
-        {/* VP Seal */}
-        <div className={`relative flex items-center justify-center w-9 h-9 rounded-full border-2 ${theme.accentBorder} bg-black/80 flex-shrink-0 ${theme.badgeGlow}`}>
-          <div className="absolute inset-0.5 rounded-full border border-white/5 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
-          <span className="font-display font-black text-[10px] text-white tracking-tighter text-glow-gold">
-            {vp}
-          </span>
-          <span className="absolute -bottom-1 bg-black px-1 rounded-[2px] text-[5px] font-black text-white/50 border border-white/10 uppercase tracking-tighter scale-90">
-            VP
-          </span>
-        </div>
-
-        {/* Lore / action text */}
-        <div className="flex-1 text-right pl-3">
-          <span className={`block text-[8px] font-black uppercase tracking-wider ${theme.accentText}`}>
-            ROAR ATTACK
-          </span>
-          <span className="block text-[6.5px] text-slate-400 font-semibold uppercase tracking-tight truncate max-w-[130px]">
-            Double bid value challenge
-          </span>
-        </div>
+    <div className="absolute bottom-[-18px] left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+      <div className={`relative flex flex-col items-center justify-center w-14 h-14 rounded-full border-2 ${theme.accentBorder} bg-[#0a0a0a] flex-shrink-0 ${theme.badgeGlow}`}>
+        <div className="absolute inset-0.5 rounded-full border border-white/10 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+        <span className="font-display font-black text-base text-white tracking-tighter text-glow-gold mt-1 leading-none">
+          {vp}
+        </span>
+        <span className="text-[8px] font-black text-white/50 uppercase tracking-widest mt-0.5 leading-none">
+          VP
+        </span>
       </div>
     </div>
   );
 }
 
-// ─── MAIN COLLECTIBLE CARD COMPONENT ────────────────────────────────────────
+// ─── MAIN PREMIUM CARD COMPONENT ─────────────────────────────────────────────
+// ✅ FIX: Removed `style={{ transformStyle: 'preserve-3d', perspective: '1000px' }}`
+//    That caused overflow-hidden to fail in Chrome, making the animal image
+//    escape the card container and fill the entire viewport.
 export default function PremiumCard({ name, vp, className = '', isHoverable = true, isSelected = false }) {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Fallback to w-[250px] if no width class is provided
   const hasWidth = className.split(' ').some(c => c.startsWith('w-') || c.startsWith('w-['));
   const widthClass = hasWidth ? '' : 'w-[250px]';
 
@@ -300,24 +266,16 @@ export default function PremiumCard({ name, vp, className = '', isHoverable = tr
     <div
       onMouseEnter={() => isHoverable && setIsHovered(true)}
       onMouseLeave={() => isHoverable && setIsHovered(false)}
-      className={`relative select-none aspect-[2.5/3.6] cursor-pointer transition-all duration-300 overflow-hidden rounded-2xl ${widthClass} ${
-        isHoverable && isHovered ? 'scale-105 shadow-card-hover -translate-y-2' : ''
-      } ${
-        isSelected ? 'ring-2 ring-white scale-110 shadow-glow-gold' : ''
-      } ${className}`}
-      style={{ transformStyle: 'preserve-3d', perspective: '1000px' }}
+      className={`relative select-none aspect-[2.5/3.6] cursor-pointer transition-all duration-300 overflow-hidden rounded-2xl ${widthClass} ${isHoverable && isHovered ? 'scale-105 shadow-card-hover -translate-y-2' : ''
+        } ${isSelected ? 'ring-2 ring-white scale-110 shadow-glow-gold' : ''
+        } ${className}`}
     >
       <CardFrame name={name} isHovered={isHovered} isSelected={isSelected}>
-        {/* Header */}
         <CardHeader name={name} />
-
-        {/* Full-art image area — flex-1 fills all remaining height */}
-        <div className="flex-1 relative overflow-hidden border-b border-black/40 min-h-0">
+        <div className="flex-1 relative overflow-visible min-h-0">
           <CardArtwork name={name} />
+          <CardFooter name={name} vp={vp} />
         </div>
-
-        {/* Footer */}
-        <CardFooter name={name} vp={vp} />
       </CardFrame>
     </div>
   );
